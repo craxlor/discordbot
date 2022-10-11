@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 import org.json.simple.parser.ParseException;
 
 import com.github.craxlor.discordbot.reply.EmbedBuilder;
-import com.github.craxlor.javaredditwrapper.Listings;
-import com.github.craxlor.javaredditwrapper.Reddit;
-import com.github.craxlor.javaredditwrapper.RedditPost;
+import com.github.craxlor.jReddit.Listings;
+import com.github.craxlor.jReddit.Reddit;
+import com.github.craxlor.jReddit.RedditPost;
 
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 

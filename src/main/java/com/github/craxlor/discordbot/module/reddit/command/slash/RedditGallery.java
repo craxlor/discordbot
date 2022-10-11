@@ -11,8 +11,8 @@ import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
-import com.github.craxlor.javaredditwrapper.Reddit;
-import com.github.craxlor.javaredditwrapper.subreddit.SubReddit;
+import com.github.craxlor.jReddit.Reddit;
+import com.github.craxlor.jReddit.subreddit.SubReddit;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;

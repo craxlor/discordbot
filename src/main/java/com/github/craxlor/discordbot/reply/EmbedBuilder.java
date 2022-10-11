@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import com.github.craxlor.discordbot.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.javaredditwrapper.RedditPost;
+import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Guild;
