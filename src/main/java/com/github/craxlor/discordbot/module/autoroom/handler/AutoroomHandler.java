@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.Logger;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
-
+import com.github.craxlor.discordbot.module.autoroom.command.slash.Setup;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -113,9 +113,22 @@ public class AutoroomHandler extends ListenerAdapter {
             name = name.replace("username", member.getEffectiveName());
         }
         // create new voicechannel
-        // uses category permissions by default
-        VoiceChannel autoroom = guild.createVoiceChannel(name, category).complete();
+        VoiceChannel autoroom;
+        switch ((String) autoroomTriggerJSON.get("parent")) {
+            case Setup.CHOICE_TRIGGER -> {
+                autoroom = guild.createCopyOfChannel(autoroomTrigger).setName(name).complete();
+            }
+            case Setup.CHOICE_CATEGORY -> {
+                autoroom = guild.createVoiceChannel(name, category).complete();
+            }
+            default -> autoroom = guild.createVoiceChannel(name, category).complete();
+        }
         autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
+        // with category permissions
+        autoroom = guild.createVoiceChannel(name, category).complete();
+        autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
+        // with trigger channel permissions
+        guild.createCopyOfChannel(autoroomTrigger).setName(name).queue();
 
         // move member to new voiceChannel
         guild.moveVoiceMember(member, autoroom).queue();

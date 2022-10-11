@@ -26,6 +26,10 @@ public class Setup extends SCAdmin {
 	private static final String CREATE_OPT_TRIGGER_DESCRIPTION = "autoroom";
 	private static final String CREATE_OPT_CATEGORY_NAME = "category";
 	private static final String CREATE_OPT_CATEGORY_DESCRIPTION = "autoroom";
+	private static final String CREATE_OPT_PARENT_NAME = "parent";
+	private static final String CREATE_OPT_PARENT_DESCRIPTION = "autoroom";
+	public static final String CHOICE_TRIGGER = "trigger";
+	public static final String CHOICE_CATEGORY = "category";
 	private static final String REMOVE_NAME = "remove";
 	private static final String REMOVE_DESCRIPTION = "autoroom";
 	private static final String REMOVE_OPT_NAME = "channel";
@@ -43,8 +47,11 @@ public class Setup extends SCAdmin {
 				CREATE_OPT_TRIGGER_DESCRIPTION, true);
 		OptionData createOptionCategory = new OptionData(OptionType.CHANNEL, CREATE_OPT_CATEGORY_NAME,
 				CREATE_OPT_CATEGORY_DESCRIPTION, true);
-
-		create.addOptions(createOptionName, createOptionTrigger, createOptionCategory);
+		OptionData createOptionParent = new OptionData(OptionType.STRING, CREATE_OPT_PARENT_NAME,
+				CREATE_OPT_PARENT_DESCRIPTION, true);
+		createOptionParent.addChoice(CHOICE_TRIGGER, CHOICE_TRIGGER);
+		createOptionParent.addChoice(CHOICE_CATEGORY, CHOICE_CATEGORY);
+		create.addOptions(createOptionName, createOptionTrigger, createOptionCategory, createOptionParent);
 		// remove option
 		OptionData removeOption = new OptionData(OptionType.CHANNEL, REMOVE_OPT_NAME, REMOVE_OPT_DESCRIPTION,
 				true);
@@ -72,29 +79,31 @@ public class Setup extends SCAdmin {
 		Guild guild = event.getGuild();
 		GuildManager guildManager = GuildManager.getGuildManager(guild);
 		GuildConfig config = guildManager.getGuildConfig();
-		if (subcommandName.equals(CREATE_NAME)) { // create
-			String name = event.getOption(CREATE_OPT_NAME_NAME).getAsString();
-			VoiceChannel trigger = event.getOption(CREATE_OPT_TRIGGER_NAME)
-					.getAsChannel().asVoiceChannel();
-			Category category = event.getOption(CREATE_OPT_CATEGORY_NAME)
-					.getAsChannel().asCategory();
-			config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong());
-
-			statusDetail = "set " + trigger.getAsMention()
-					+ " as a autoroomTrigger.\nThe autorooms will be named: " + name;
-		} else if (subcommandName.equals(REMOVE_NAME)) {// remove
-			// remove trigger channel
-			VoiceChannel trigger = event.getOption(REMOVE_OPT_NAME)
-					.getAsChannel()
-					.asVoiceChannel();
-			if (config.removeAutoroomTrigger(trigger.getIdLong())) {
-				trigger.delete().queue();
-				statusDetail = "removed " + trigger.getAsMention();
-			} else {
-				statusDetail = "couldn't identify " + trigger.getAsMention() + " as a autoroomTrigger";
+		switch (subcommandName) {
+			case CREATE_NAME -> {
+				String name = event.getOption(CREATE_OPT_NAME_NAME).getAsString();
+				VoiceChannel trigger = event.getOption(CREATE_OPT_TRIGGER_NAME)
+						.getAsChannel().asVoiceChannel();
+				Category category = event.getOption(CREATE_OPT_CATEGORY_NAME)
+						.getAsChannel().asCategory();
+				String parent = event.getOption(CREATE_OPT_PARENT_NAME).getAsString();
+				config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
+				statusDetail = "set " + trigger.getAsMention()
+						+ " as a autoroomTrigger.\nThe autorooms will be named: " + name;
+			}
+			case REMOVE_NAME -> {
+				// remove trigger channel
+				VoiceChannel trigger = event.getOption(REMOVE_OPT_NAME)
+						.getAsChannel()
+						.asVoiceChannel();
+				if (config.removeAutoroomTrigger(trigger.getIdLong())) {
+					trigger.delete().queue();
+					statusDetail = "removed " + trigger.getAsMention();
+				} else {
+					statusDetail = "couldn't identify " + trigger.getAsMention() + " as a autoroomTrigger";
+				}
 			}
 		}
-
 		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
 	}
 

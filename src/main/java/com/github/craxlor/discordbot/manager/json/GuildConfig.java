@@ -188,12 +188,13 @@ public class GuildConfig extends JSONFile {
 
     // AUTOROOM
     @SuppressWarnings("unchecked")
-    public void addAutoroomTrigger(String staticName, long channelID, long categoryID) {
+    public void addAutoroomTrigger(String staticName, long channelID, long categoryID, String parent) {
         JSONObject trigger = new JSONObject();
         trigger.put("name", staticName);
         trigger.put("channel-id", channelID);
         trigger.put("category-id", categoryID);
-
+        trigger.put("parent",parent);
+        
         JSONObject autoroom = root.get("autoroom") != null ? (JSONObject) root.get("autoroom") : new JSONObject();
 
         JSONArray triggers = autoroom.get("triggers") != null ? (JSONArray) autoroom.get("triggers") : new JSONArray();
