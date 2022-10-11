@@ -1,0 +1,7 @@
+.gradle
+.vscode
+bin
+build
+resources/guildconfigs
+resources/logs
+src/main/java/com/github/craxlor/discordbot/Secrets.java

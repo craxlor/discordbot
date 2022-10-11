@@ -1,0 +1,45 @@
+{
+    "guild": {
+        "name": "",
+        "roles": {
+            "admin": 111,
+            "dj": 111
+        },
+        "embed-color": {
+            "red": 0,
+            "green": 0,
+            "blue": 0
+        }
+    },
+    "modules": [
+        "",
+        "",
+        ""
+    ],
+    "music-log": 111,
+    "reddit": {
+        "category-id": 111,
+        "galleries": [
+            {
+                "name": "username & number will be parsed",
+                "channel-id": 111
+            }
+        ]
+    },
+    "dvc": {
+        "triggers": [
+            {
+                "name": "",
+                "channel-id": 111,
+                "category-id": 111,
+                "permission-parent-id": 111
+            }
+        ],
+        "channels": [
+            {
+                "channel-id": 111,
+                "trigger-id": 111
+            }
+        ]
+    }
+}
