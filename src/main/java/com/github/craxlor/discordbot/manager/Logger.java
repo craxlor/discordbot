@@ -43,16 +43,15 @@ public class Logger {
     // AUTOROOM
     public void logAutoroom(String action, String channeltype, String channelname) {
         logger.info("""
-
+                    %s
                       Guild: %s
-                     Action: %s
                 Channeltype: %s
-                Channelname: %s""".formatted(guild.getName(), action, channeltype, channelname));
+                Channelname: %s""".formatted(guild.getName(), channeltype, channelname));
     }
 
     public void logMusicPermissonError(String errortype, String errorDetail) {
         logger.warning("""
-
+                ERROR
                  Guild: %s
                  Error: %s
                 Detail: %s""".formatted(guild.getName(), errortype, errorDetail));
