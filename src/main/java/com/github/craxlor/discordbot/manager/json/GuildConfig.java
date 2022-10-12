@@ -215,7 +215,7 @@ public class GuildConfig extends JSONFile {
         }
         if (name != null && name.isEmpty() == false)
             triggerJSON.put("name", name);
-        if (categoryID < 0)
+        if (categoryID > 0)
             triggerJSON.put("category-id", categoryID);
         if (parent != null && parent.isEmpty() == false)
             triggerJSON.put("parent", parent);
