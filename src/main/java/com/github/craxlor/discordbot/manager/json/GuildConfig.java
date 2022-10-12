@@ -193,14 +193,35 @@ public class GuildConfig extends JSONFile {
         trigger.put("name", staticName);
         trigger.put("channel-id", channelID);
         trigger.put("category-id", categoryID);
-        trigger.put("parent",parent);
-        
+        trigger.put("parent", parent);
         JSONObject autoroom = root.get("autoroom") != null ? (JSONObject) root.get("autoroom") : new JSONObject();
-
         JSONArray triggers = autoroom.get("triggers") != null ? (JSONArray) autoroom.get("triggers") : new JSONArray();
-
         triggers.add(trigger);
         autoroom.put("triggers", triggers);
+        put("autoroom", autoroom, true);
+    }
+
+    @SuppressWarnings({ "null", "unchecked" })
+    public void editAutoroomtrigger(long channelID, String name, long categoryID, String parent) {
+        JSONArray triggersArray = getAutoroomTriggers();
+        JSONObject triggerJSON = null;
+        for (Object triggerObject : triggersArray) {
+            triggerJSON = (JSONObject) triggerObject;
+            if ((long) triggerJSON.get("channel-id") == channelID) {
+                // remove entry for editing
+                triggersArray.remove(triggerObject);
+                break;
+            }
+        }
+        if (name != null && name.isEmpty() == false)
+            triggerJSON.put("name", name);
+        if (categoryID < 0)
+            triggerJSON.put("category-id", categoryID);
+        if (parent != null && parent.isEmpty() == false)
+            triggerJSON.put("parent", parent);
+        triggersArray.add(triggerJSON);
+        JSONObject autoroom = (JSONObject) root.get("autoroom");
+        autoroom.put("triggers", triggersArray);
         put("autoroom", autoroom, true);
     }
 

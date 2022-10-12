@@ -113,22 +113,20 @@ public class AutoroomHandler extends ListenerAdapter {
             name = name.replace("username", member.getEffectiveName());
         }
         // create new voicechannel
-        VoiceChannel autoroom;
-        switch ((String) autoroomTriggerJSON.get("parent")) {
-            case Setup.CHOICE_TRIGGER -> {
-                autoroom = guild.createCopyOfChannel(autoroomTrigger).setName(name).complete();
+        VoiceChannel autoroom = null;
+        if (autoroomTriggerJSON.get("parent") == null)
+            autoroom = guild.createVoiceChannel(name, category).complete();
+        else {
+            switch ((String) autoroomTriggerJSON.get("parent")) {
+                case Setup.CHOICE_TRIGGER -> {
+                    autoroom = guild.createCopyOfChannel(autoroomTrigger).setName(name).complete();
+                }
+                case Setup.CHOICE_CATEGORY -> {
+                    autoroom = guild.createVoiceChannel(name, category).complete();
+                }
             }
-            case Setup.CHOICE_CATEGORY -> {
-                autoroom = guild.createVoiceChannel(name, category).complete();
-            }
-            default -> autoroom = guild.createVoiceChannel(name, category).complete();
         }
         autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
-        // with category permissions
-        autoroom = guild.createVoiceChannel(name, category).complete();
-        autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
-        // with trigger channel permissions
-        guild.createCopyOfChannel(autoroomTrigger).setName(name).queue();
 
         // move member to new voiceChannel
         guild.moveVoiceMember(member, autoroom).queue();
