@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 public class Main {
     public static void main(String[] args) {
         try {
-            JDABuilder builder = JDABuilder.createDefault(com.github.craxlor.discordbot.Secrets.DEV_TOKEN);
+            JDABuilder builder = JDABuilder.createDefault(Secrets.DISCORD_TOKEN);
             builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
             builder.setChunkingFilter(ChunkingFilter.ALL);
             builder.setLargeThreshold(50);
