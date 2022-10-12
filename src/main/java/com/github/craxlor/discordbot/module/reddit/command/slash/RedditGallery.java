@@ -18,6 +18,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
@@ -31,6 +32,8 @@ public class RedditGallery extends SCAdmin {
     private static final String DELETE_DESCRIPTION = "delete a redditgallery";
     private static final String DELETE_OPT_NAME = "gallery";
     private static final String DELETE_OPT_DESCRIPTION = "select one of these";
+    private static final String REMOVE_OPT_DELETE_NAME = "delete";
+    private static final String REMOVE_OPT_DELETE_DESCRIPTION = "autoroom";
 
     private static final String CATEGORYNAME = "redditgalleries";
 
@@ -41,6 +44,7 @@ public class RedditGallery extends SCAdmin {
         // delete subCommand
         SubcommandData delete = new SubcommandData(DELETE_NAME, DELETE_DESCRIPTION);
         delete.addOption(OptionType.CHANNEL, DELETE_OPT_NAME, DELETE_OPT_DESCRIPTION, true);
+        delete.addOption(OptionType.BOOLEAN, REMOVE_OPT_DELETE_NAME, REMOVE_OPT_DELETE_DESCRIPTION);
         commandData.addSubcommands(create, delete);
     }
 
@@ -123,7 +127,10 @@ public class RedditGallery extends SCAdmin {
         config.removeRedditGallery(galleryChannel.getIdLong());
         guildManager.getGalleryTasks().reloadTasks();
         // delete textChannel
-        galleryChannel.delete().queue();
+        OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
+        if (optionMapping != null && optionMapping.getAsBoolean())
+            galleryChannel.delete().queue();
+
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS,
                 "deleted gallery for the subreddit: " + galleryChannel.getName());
     }

@@ -21,6 +21,8 @@ public class Setup extends SCAdmin {
 
 	private static final String CREATE_NAME = "create";
 	private static final String CREATE_DESCRIPTION = "autoroom";
+	private static final String EDIT_NAME = "edit";
+	private static final String EDIT_DESCRIPTION = "desc";
 	private static final String OPT_NAME_NAME = "name";
 	private static final String OPT_NAME_DESCRIPTION = "autoroom";
 	private static final String OPT_TRIGGER_NAME = "trigger";
@@ -33,16 +35,14 @@ public class Setup extends SCAdmin {
 	public static final String CHOICE_CATEGORY = "category";
 	private static final String REMOVE_NAME = "remove";
 	private static final String REMOVE_DESCRIPTION = "autoroom";
-	private static final String REMOVE_OPT_NAME = "channel";
-	private static final String REMOVE_OPT_DESCRIPTION = "autoroom";
-	private static final String EDIT_NAME = "edit";
-	private static final String EDIT_DESCRIPTION = "desc";
+	private static final String REMOVE_OPT_CHANNEL_NAME = "channel";
+	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "autoroom";
+	private static final String REMOVE_OPT_DELETE_NAME = "delete";
+	private static final String REMOVE_OPT_DELETE_DESCRIPTION = "autoroom";
 
 	public Setup() {
+		// CREATE
 		SubcommandData create = new SubcommandData(CREATE_NAME, CREATE_DESCRIPTION);
-		SubcommandData edit = new SubcommandData(EDIT_NAME, EDIT_DESCRIPTION);
-		SubcommandData remove = new SubcommandData(REMOVE_NAME, REMOVE_DESCRIPTION);
-		// create options
 		OptionData createOptionName = new OptionData(OptionType.STRING, OPT_NAME_NAME,
 				OPT_NAME_DESCRIPTION, true);
 		OptionData createOptionTrigger = new OptionData(OptionType.CHANNEL, OPT_TRIGGER_NAME,
@@ -54,11 +54,8 @@ public class Setup extends SCAdmin {
 		createOptionParent.addChoice(CHOICE_TRIGGER, CHOICE_TRIGGER);
 		createOptionParent.addChoice(CHOICE_CATEGORY, CHOICE_CATEGORY);
 		create.addOptions(createOptionName, createOptionTrigger, createOptionCategory, createOptionParent);
-		// remove option
-		OptionData removeOption = new OptionData(OptionType.CHANNEL, REMOVE_OPT_NAME, REMOVE_OPT_DESCRIPTION,
-				true);
-		remove.addOptions(removeOption);
-		// edit options
+		// EDIT
+		SubcommandData edit = new SubcommandData(EDIT_NAME, EDIT_DESCRIPTION);
 		OptionData editOptionChannel = new OptionData(OptionType.CHANNEL, OPT_TRIGGER_NAME, OPT_TRIGGER_DESCRIPTION,
 				true);
 		OptionData editOptionName = new OptionData(OptionType.STRING, OPT_NAME_NAME, OPT_NAME_DESCRIPTION);
@@ -67,6 +64,15 @@ public class Setup extends SCAdmin {
 		editOptionParent.addChoice(CHOICE_TRIGGER, CHOICE_TRIGGER);
 		editOptionParent.addChoice(CHOICE_CATEGORY, CHOICE_CATEGORY);
 		edit.addOptions(editOptionChannel, editOptionName, editOptionCategory, editOptionParent);
+		// REMOVE
+		SubcommandData remove = new SubcommandData(REMOVE_NAME, REMOVE_DESCRIPTION);
+		OptionData removeOptionTrigger = new OptionData(OptionType.CHANNEL, REMOVE_OPT_CHANNEL_NAME,
+				REMOVE_OPT_CHANNEL_DESCRIPTION,
+				true);
+		OptionData removeOptionDelete = new OptionData(OptionType.BOOLEAN, REMOVE_OPT_DELETE_NAME,
+				REMOVE_OPT_DELETE_DESCRIPTION);
+		remove.addOptions(removeOptionTrigger, removeOptionDelete);
+
 		commandData.addSubcommands(create, edit, remove);
 	}
 
@@ -90,6 +96,7 @@ public class Setup extends SCAdmin {
 		Guild guild = event.getGuild();
 		GuildManager guildManager = GuildManager.getGuildManager(guild);
 		GuildConfig config = guildManager.getGuildConfig();
+		Status status = Status.ERROR;
 		switch (subcommandName) {
 			case CREATE_NAME -> {
 				String name = event.getOption(OPT_NAME_NAME).getAsString();
@@ -101,6 +108,7 @@ public class Setup extends SCAdmin {
 				config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
 				statusDetail = "set " + trigger.getAsMention()
 						+ " as a autoroomTrigger.\nThe autorooms will be named: " + name;
+				status = Status.SUCCESS;
 			}
 			case EDIT_NAME -> {
 				VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME).getAsChannel().asVoiceChannel();
@@ -117,30 +125,23 @@ public class Setup extends SCAdmin {
 				if ((option = event.getOption(OPT_PARENT_NAME)) != null)
 					parent = option.getAsString();
 				config.editAutoroomtrigger(trigger.getIdLong(), name, categoryID, parent);
-				/**
-				 * todo
-				 * include null checks because the options are optional and not mandatory
-				 * only apply chanhges to edited setting
-				 * check parent option
-				 * check category option
-				 * check name option
-				 */
-
+				status = Status.SUCCESS;
 			}
 			case REMOVE_NAME -> {
-				// remove trigger channel
-				VoiceChannel trigger = event.getOption(REMOVE_OPT_NAME)
+				VoiceChannel trigger = event.getOption(REMOVE_OPT_CHANNEL_NAME)
 						.getAsChannel()
 						.asVoiceChannel();
 				if (config.removeAutoroomTrigger(trigger.getIdLong())) {
-					trigger.delete().queue();
 					statusDetail = "removed " + trigger.getAsMention();
-				} else {
+					status = Status.SUCCESS;
+				} else
 					statusDetail = "couldn't identify " + trigger.getAsMention() + " as a autoroomTrigger";
-				}
+				OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
+				if (optionMapping != null && optionMapping.getAsBoolean())
+					trigger.delete().queue();
 			}
 		}
-		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
+		return new Reply(event.deferReply(), false).onCommand(event, status, statusDetail);
 	}
 
 	@Override
