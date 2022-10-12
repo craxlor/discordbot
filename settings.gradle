@@ -8,12 +8,6 @@
  */
 
 rootProject.name = 'discordbot'
-include('app') 
-include('core')
-
-include('autoroom')
-include('music')
-include('reddit')
 
 include(':utilities')
 project(':utilities').projectDir = file('../utilities')
