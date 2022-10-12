@@ -120,6 +120,7 @@ public class AutoroomHandler extends ListenerAdapter {
             switch ((String) autoroomTriggerJSON.get("parent")) {
                 case Setup.CHOICE_TRIGGER -> {
                     autoroom = guild.createCopyOfChannel(autoroomTrigger).setName(name).complete();
+                    autoroom.getManager().setParent(category).queue();
                 }
                 case Setup.CHOICE_CATEGORY -> {
                     autoroom = guild.createVoiceChannel(name, category).complete();
