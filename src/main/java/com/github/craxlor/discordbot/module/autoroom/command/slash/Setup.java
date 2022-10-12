@@ -64,6 +64,8 @@ public class Setup extends SCAdmin {
 		OptionData editOptionName = new OptionData(OptionType.STRING, OPT_NAME_NAME, OPT_NAME_DESCRIPTION);
 		OptionData editOptionCategory = new OptionData(OptionType.CHANNEL, OPT_CATEGORY_NAME, OPT_CATEGORY_DESCRIPTION);
 		OptionData editOptionParent = new OptionData(OptionType.STRING, OPT_PARENT_NAME, OPT_PARENT_DESCRIPTION);
+		editOptionParent.addChoice(CHOICE_TRIGGER, CHOICE_TRIGGER);
+		editOptionParent.addChoice(CHOICE_CATEGORY, CHOICE_CATEGORY);
 		edit.addOptions(editOptionChannel, editOptionName, editOptionCategory, editOptionParent);
 		commandData.addSubcommands(create, edit, remove);
 	}
