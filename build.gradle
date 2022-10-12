@@ -8,6 +8,12 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
+mainClassName = 'com.github.craxlor.discordbot.Main'
+
+configurations {
+    umlDoclet
+}
+
 repositories{
     flatDir {
        dirs 'libs'
@@ -28,4 +34,16 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic:1.2.3'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'com.google.code.gson:gson:2.8.9'
+    umlDoclet "nl.talsmasoftware:umldoclet:2.0.19"
+}
+
+shadowJar{
+    archiveClassifier.set('')
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    options.docletpath = configurations.umlDoclet.files.asType(List)
+    options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
+    // options.addStringOption "additionalParamName", "additionalParamValue"
 }
