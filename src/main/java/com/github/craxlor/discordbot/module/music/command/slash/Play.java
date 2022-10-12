@@ -32,8 +32,8 @@ public class Play extends SCMusic {
     private static final String NEXT_DESCRIPTION = "play track after the current track";
     private static final String NOW_NAME = "now";
     private static final String NOW_DESCRIPTION = "immediate playback of the provided track";
-    private static final String OPT_NAME = "queue";
-    private static final String OPT_DESCRIPTION = "queue a track";
+    private static final String OPT_NAME = "youtube-url";
+    private static final String OPT_DESCRIPTION = "provide a youtube video or playlist to play";
     private String commandAction;
     private AudioTrackInfo trackInfo;
 
