@@ -46,7 +46,7 @@ public class Logger {
                     %s
                       Guild: %s
                 Channeltype: %s
-                Channelname: %s""".formatted(guild.getName(), channeltype, channelname));
+                Channelname: %s""".formatted(action, guild.getName(), channeltype, channelname));
     }
 
     public void logMusicPermissonError(String errortype, String errorDetail) {
