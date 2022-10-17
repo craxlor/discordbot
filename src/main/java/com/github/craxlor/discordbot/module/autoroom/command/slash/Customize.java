@@ -37,8 +37,6 @@ public class Customize extends SlashCommand {
     private static final String LOCK_OPT_NAME = "lock";
     private static final String LOCK_OPT_DESCRIPTION = "lock or unlock the channel";
 
-    // TODO channel lock needs polishing -> all persons inside when locked should be
-    // able to move in and out or move others to the channel
     public Customize() {
         // rename subcommand
         SubcommandData name = new SubcommandData(NAME_NAME, NAME_DESCRIPTION);
