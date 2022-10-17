@@ -69,20 +69,14 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
         setTitle(status.toString());
         setDescription(statusDetail);
         addField("Command", commmandName, false);
-        // switch (status) {
-        // case SUCCESS -> {
-        // setThumbnail("attachment://checkmark.png");
-        // replyCallbackAction.setFiles(FileUpload.fromData(new
-        // File("resources/assets/emotes/checkmark.png"),
-        // "checkmark.png"));
-        // }
-        // default -> {
-        // setThumbnail("attachment://crossmark.png");
-        // replyCallbackAction.setFiles(FileUpload.fromData(new
-        // File("resources/assets/emotes/crossmark.png"),
-        // "crossmark.png"));
-        // }
-        // }
+        switch (status) {
+            case SUCCESS -> {
+                setThumbnail("https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2705.png");
+            }
+            default -> {
+                setThumbnail("https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/274c.png");
+            }
+        }
         footerText = event.getMember().getEffectiveName() + " used " + commmandName;
         return this;
     }
