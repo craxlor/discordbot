@@ -128,7 +128,8 @@ public class AutoroomHandler extends ListenerAdapter {
             }
         }
         autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
-
+        // inherit user limit from trigger channel
+        autoroom.getManager().setUserLimit(autoroomTrigger.getUserLimit()).queue();
         // move member to new voiceChannel
         guild.moveVoiceMember(member, autoroom).queue();
         // add created voiceChannel to config
