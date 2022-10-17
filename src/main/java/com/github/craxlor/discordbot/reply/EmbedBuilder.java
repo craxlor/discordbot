@@ -54,9 +54,9 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
         return this;
     }
 
-    public EmbedBuilder setRedditFormat(Guild guild, RedditPost redditPost, String url) {
+    public EmbedBuilder setRedditFormat(Guild guild, RedditPost redditPost) {
         setColor(guild);
-        setImage(url);
+        setImage(redditPost.getUrl_overridden_by_dest());
         setTitle(redditPost.getTitle(), redditPost.getPermalink());
         setFooter(" 👍 " + redditPost.getUps() + " |" + " 💬 " + redditPost.getNum_comments() + " - "
                 + redditPost.getSubReddit());
