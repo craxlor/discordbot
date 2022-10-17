@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,19 +17,17 @@ public class Reply {
     private ReplyCallbackAction replyCallbackAction;
     @Nullable
     private MessageEmbed messageEmbed;
-    private boolean ephemeral;
 
     public Reply(@Nonnull ReplyCallbackAction replyCallbackAction, boolean ephemeral) {
         this.replyCallbackAction = replyCallbackAction;
-        messageEmbed = null;
-        this.ephemeral = ephemeral;
+        this.replyCallbackAction.setEphemeral(ephemeral);
     }
 
     public Reply(@Nonnull ReplyCallbackAction replyCallbackAction, @Nonnull MessageEmbed messageEmbed,
             boolean ephemeral) {
         this.replyCallbackAction = replyCallbackAction;
         this.messageEmbed = messageEmbed;
-        this.ephemeral = ephemeral;
+        this.replyCallbackAction.setEphemeral(ephemeral);
     }
 
     public Reply setMessageEmbed(@Nonnull MessageEmbed messageEmbed) {
@@ -66,17 +63,10 @@ public class Reply {
         return onMusic(event, status, statusDetail, null);
     }
 
-    public Reply onReddit(SlashCommandInteractionEvent event, RedditPost redditPost) {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setRedditFormat(event.getGuild(), redditPost);
-        messageEmbed = embedBuilder.build(event.getMember());
-        return this;
-    }
-
     public void send() {
         if (messageEmbed != null)
-            replyCallbackAction.addEmbeds(messageEmbed).setEphemeral(ephemeral).queue();
+            replyCallbackAction.addEmbeds(messageEmbed).queue();
         else
-            replyCallbackAction.setEphemeral(ephemeral).queue();
+            replyCallbackAction.queue();
     }
 }
