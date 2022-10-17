@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -61,6 +62,13 @@ public class Reply {
 
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail) {
         return onMusic(event, status, statusDetail, null);
+    }
+
+    public Reply onReddit(SlashCommandInteractionEvent event, RedditPost redditPost) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setRedditFormat(event.getGuild(), redditPost);
+        messageEmbed = embedBuilder.build(event.getMember());
+        return this;
     }
 
     public void send() {
