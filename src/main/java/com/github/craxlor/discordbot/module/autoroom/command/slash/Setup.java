@@ -96,52 +96,86 @@ public class Setup extends SCAdmin {
 		Guild guild = event.getGuild();
 		GuildManager guildManager = GuildManager.getGuildManager(guild);
 		GuildConfig config = guildManager.getGuildConfig();
-		Status status = Status.ERROR;
+		Reply reply = new Reply(event.deferReply(), false);
 		switch (subcommandName) {
 			case CREATE_NAME -> {
-				String name = event.getOption(OPT_NAME_NAME).getAsString();
-				VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME)
-						.getAsChannel().asVoiceChannel();
-				Category category = event.getOption(OPT_CATEGORY_NAME)
-						.getAsChannel().asCategory();
-				String parent = event.getOption(OPT_PARENT_NAME).getAsString();
-				config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
-				statusDetail = "set " + trigger.getAsMention()
-						+ " as a autoroomTrigger.\nThe autorooms will be named: " + name;
-				status = Status.SUCCESS;
+				try { // try catch to validate trigger & category options
+					String name = event.getOption(OPT_NAME_NAME).getAsString();
+					VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME)
+							.getAsChannel().asVoiceChannel();
+					// prevent double bindings
+					if (config.isAutoroomTrigger(trigger.getIdLong()))
+						return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
+								"the selceted channel is already an autoroom trigger");
+					Category category = event.getOption(OPT_CATEGORY_NAME)
+							.getAsChannel().asCategory();
+					String parent = event.getOption(OPT_PARENT_NAME).getAsString();
+					config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
+					statusDetail = """
+							set %s as an autoroomTrigger.
+							The autorooms will be named: %s""".formatted(trigger.getAsMention(), name);
+					return reply.onCommand(event, Status.SUCCESS, statusDetail);
+				} catch (IllegalStateException e) {
+					return reply.onCommand(event, Status.FAIL,
+							"either the specified VoiceChannel is not a VoiceChannel or the specified category is not a category");
+				}
 			}
 			case EDIT_NAME -> {
 				VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME).getAsChannel().asVoiceChannel();
+				// check if the provided channel is a trigger
 				if (config.isAutoroomTrigger(trigger.getIdLong()) == false)
-					return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
+					return reply.onCommand(event, Status.FAIL,
 							"the selceted channel is not an autoroom trigger");
 				OptionMapping option = event.getOption(OPT_NAME_NAME);
 				String name = null, parent = null;
 				long categoryID = -1;
-				if (option != null)
+				// check the optional parameters
+				// name
+				if (option != null) {
 					name = option.getAsString();
-				if ((option = event.getOption(OPT_CATEGORY_NAME)) != null)
-					categoryID = option.getAsLong();
-				if ((option = event.getOption(OPT_PARENT_NAME)) != null)
+					statusDetail = """
+							changed the **naming pattern** for autorooms created by %s to: %s"""
+							.formatted(trigger.getAsMention(), name);
+				}
+				// category
+				if ((option = event.getOption(OPT_CATEGORY_NAME)) != null) {
+					try {
+						Category category = option.getAsChannel().asCategory();
+						categoryID = category.getIdLong();
+						statusDetail += """
+
+								changed the **category** where autorooms created by %s will be placed to &s"""
+								.formatted(trigger.getAsMention(), category.getAsMention());
+					} catch (IllegalStateException e) {
+						return reply.onCommand(event, Status.FAIL, "the selected channel has to be a **category**");
+					}
+				}
+				// parent
+				if ((option = event.getOption(OPT_PARENT_NAME)) != null) {
 					parent = option.getAsString();
+					statusDetail += """
+
+							changed the parent object that determines the rights of the autorooms to the %s
+								""".formatted(parent);
+				}
+				// apply changes
 				config.editAutoroomtrigger(trigger.getIdLong(), name, categoryID, parent);
-				status = Status.SUCCESS;
+				return reply.onCommand(event, Status.SUCCESS, statusDetail);
 			}
 			case REMOVE_NAME -> {
-				VoiceChannel trigger = event.getOption(REMOVE_OPT_CHANNEL_NAME)
-						.getAsChannel()
-						.asVoiceChannel();
+				VoiceChannel trigger = event.getOption(REMOVE_OPT_CHANNEL_NAME).getAsChannel().asVoiceChannel();
 				if (config.removeAutoroomTrigger(trigger.getIdLong())) {
 					statusDetail = "removed " + trigger.getAsMention();
-					status = Status.SUCCESS;
+					OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
+					if (optionMapping != null && optionMapping.getAsBoolean())
+						trigger.delete().queue();
+					return reply.onCommand(event, Status.SUCCESS, statusDetail);
 				} else
-					statusDetail = "couldn't identify " + trigger.getAsMention() + " as a autoroomTrigger";
-				OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
-				if (optionMapping != null && optionMapping.getAsBoolean())
-					trigger.delete().queue();
+					return reply.onCommand(event, Status.FAIL,
+							"couldn't identify " + trigger.getAsMention() + " as an autoroomTrigger");
 			}
 		}
-		return new Reply(event.deferReply(), false).onCommand(event, status, statusDetail);
+		return reply.onCommand(event, Status.ERROR, "fatal error\ncontact the dev");
 	}
 
 	@Override
