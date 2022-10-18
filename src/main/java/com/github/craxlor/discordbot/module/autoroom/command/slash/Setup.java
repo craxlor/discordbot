@@ -20,25 +20,25 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class Setup extends SCAdmin {
 
 	private static final String CREATE_NAME = "create";
-	private static final String CREATE_DESCRIPTION = "autoroom";
+	private static final String CREATE_DESCRIPTION = "define a VoiceChannel as an autoroom trigger, which can be used to create Autorooms with specifc settings";
 	private static final String EDIT_NAME = "edit";
-	private static final String EDIT_DESCRIPTION = "desc";
+	private static final String EDIT_DESCRIPTION = "edit a previously defined autoroom trigger";
 	private static final String OPT_NAME_NAME = "name";
-	private static final String OPT_NAME_DESCRIPTION = "autoroom";
+	private static final String OPT_NAME_DESCRIPTION = "set the naming pattern for autorooms created with this trigger\n Variables: username, number";
 	private static final String OPT_TRIGGER_NAME = "trigger";
-	private static final String OPT_TRIGGER_DESCRIPTION = "autoroom";
+	private static final String OPT_TRIGGER_DESCRIPTION = "select the VoiceChannel that will act as the trigger";
 	private static final String OPT_CATEGORY_NAME = "category";
-	private static final String OPT_CATEGORY_DESCRIPTION = "autoroom";
+	private static final String OPT_CATEGORY_DESCRIPTION = "select a category in which the created autorooms should remain";
 	private static final String OPT_PARENT_NAME = "parent";
-	private static final String OPT_PARENT_DESCRIPTION = "autoroom";
+	private static final String OPT_PARENT_DESCRIPTION = "select a parent object which determines the permissions of the autorooms";
 	public static final String CHOICE_TRIGGER = "trigger";
 	public static final String CHOICE_CATEGORY = "category";
 	private static final String REMOVE_NAME = "remove";
-	private static final String REMOVE_DESCRIPTION = "autoroom";
+	private static final String REMOVE_DESCRIPTION = "remove the autotrigger configuration for a specific channel";
 	private static final String REMOVE_OPT_CHANNEL_NAME = "channel";
-	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "autoroom";
+	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "select the autoroom trigger to be removed";
 	private static final String REMOVE_OPT_DELETE_NAME = "delete";
-	private static final String REMOVE_OPT_DELETE_DESCRIPTION = "autoroom";
+	private static final String REMOVE_OPT_DELETE_DESCRIPTION = "should the channel be deleted or remain?";
 
 	public Setup() {
 		// CREATE
@@ -155,7 +155,7 @@ public class Setup extends SCAdmin {
 					parent = option.getAsString();
 					statusDetail += """
 
-							changed the parent object that determines the rights of the autorooms to the %s
+							changed the parent object that determines the permissions of the autorooms to the %s
 								""".formatted(parent);
 				}
 				// apply changes
