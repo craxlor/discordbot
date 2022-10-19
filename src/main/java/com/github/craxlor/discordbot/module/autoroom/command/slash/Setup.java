@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class Setup extends SCAdmin {
 
 	private static final String CREATE_NAME = "create";
-	private static final String CREATE_DESCRIPTION = "define a VoiceChannel as an autoroom trigger, which can be used to create Autorooms with specifc settings";
+	private static final String CREATE_DESCRIPTION = "define an autoroom trigger, which can be used to create Autorooms with specifc settings";
 	private static final String EDIT_NAME = "edit";
 	private static final String EDIT_DESCRIPTION = "edit a previously defined autoroom trigger";
 	private static final String OPT_NAME_NAME = "name";
@@ -34,7 +34,7 @@ public class Setup extends SCAdmin {
 	public static final String CHOICE_TRIGGER = "trigger";
 	public static final String CHOICE_CATEGORY = "category";
 	private static final String REMOVE_NAME = "remove";
-	private static final String REMOVE_DESCRIPTION = "remove the autotrigger configuration for a specific channel";
+	private static final String REMOVE_DESCRIPTION = "remove the autoroom trigger configuration for a specific channel";
 	private static final String REMOVE_OPT_CHANNEL_NAME = "channel";
 	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "select the autoroom trigger to be removed";
 	private static final String REMOVE_OPT_DELETE_NAME = "delete";
