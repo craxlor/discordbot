@@ -34,8 +34,10 @@ public class Play extends SCMusic {
     private static final String NOW_DESCRIPTION = "immediate playback of the provided track";
     private static final String OPT_NAME = "youtube-url";
     private static final String OPT_DESCRIPTION = "provide a youtube video or playlist to play";
-    private String commandAction;
-    private AudioTrackInfo trackInfo;
+    // response related
+    private String commandAction = null;
+    private AudioTrackInfo trackInfo = null;
+    private Status status = Status.ERROR;
 
     public Play() {
         SubcommandData queue = new SubcommandData(QUEUE_NAME, QUEUE_DESCRIPTION);
@@ -45,7 +47,6 @@ public class Play extends SCMusic {
         queue.addOptions(option);
         next.addOptions(option);
         now.addOptions(option);
-
         commandData.addSubcommands(queue, next, now);
     }
 
@@ -112,6 +113,7 @@ public class Play extends SCMusic {
                         }
                     }
                     trackInfo = track.getInfo();
+                    status = Status.SUCCESS;
                 }
 
                 @Override
@@ -123,22 +125,22 @@ public class Play extends SCMusic {
                         case NOW_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, false);
                     }
                     commandAction = "added playlist " + "[" + playlist.getName() + "](" + url + ")" + " to queue";
-                    trackInfo = null;
+                    status = Status.SUCCESS;
                 }
 
                 @Override
                 public void noMatches() {
                     commandAction = ":x: Nothing found";
-                    trackInfo = null;
+                    status = Status.FAIL;
                 }
 
                 @Override
                 public void loadFailed(FriendlyException exception) {
                     commandAction = ":x: Could not load \n" + exception.getMessage();
-                    trackInfo = null;
+                    status = Status.FAIL;
                 }
             }).get();
         }
-        return new Reply(event.deferReply(), false).onMusic(event, Status.SUCCESS, commandAction, trackInfo);
+        return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo);
     }
 }
