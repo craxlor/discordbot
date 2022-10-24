@@ -81,14 +81,10 @@ public class Play extends SCMusic {
             }
         }
 
-        // connect to member
-        final VoiceChannel myChannel = (VoiceChannel) member.getVoiceState().getChannel();
-        final AudioManager audioManager = member.getGuild().getAudioManager();
-        audioManager.openAudioConnection(myChannel);
-
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
+                connectTo(member);
                 switch (subcommandName) {
                     case QUEUE_NAME -> {
                         musicManager.scheduler.queue(track);
@@ -114,6 +110,7 @@ public class Play extends SCMusic {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
+                connectTo(member);
                 final List<AudioTrack> tracks = playlist.getTracks();
                 switch (subcommandName) {
                     case QUEUE_NAME -> musicManager.scheduler.addToQueue(tracks);
@@ -139,4 +136,11 @@ public class Play extends SCMusic {
 
         return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo);
     }
+
+    private void connectTo(Member member) {
+        final VoiceChannel myChannel = (VoiceChannel) member.getVoiceState().getChannel();
+        final AudioManager audioManager = member.getGuild().getAudioManager();
+        audioManager.openAudioConnection(myChannel);
+    }
+
 }
