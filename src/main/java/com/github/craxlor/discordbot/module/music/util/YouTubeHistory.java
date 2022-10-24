@@ -32,7 +32,7 @@ public class YouTubeHistory extends JSONFile {
         JSONObject e;
         for (Object entry : history) {
             e = (JSONObject) entry;
-            if (e.containsKey(key)) {
+            if (((String) e.get("key")).equals(key)) {
                 return true;
             }
         }
@@ -44,7 +44,7 @@ public class YouTubeHistory extends JSONFile {
         JSONObject e;
         for (Object entry : history) {
             e = (JSONObject) entry;
-            if (e.containsKey(key)) {
+            if (((String) e.get("key")).equals(key)) {
                 return (String) e.get("value");
             }
         }
