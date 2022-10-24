@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.module.music.command.SCMusic;
 import com.github.craxlor.discordbot.module.music.manager.MusicManager;
+import com.github.craxlor.discordbot.module.music.util.SpotifyHelper;
+import com.github.craxlor.discordbot.module.music.util.YouTubeHelper;
+import com.github.craxlor.discordbot.module.music.util.YouTubeHistory;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -23,6 +26,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
+import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 
 public class Play extends SCMusic {
 
@@ -34,10 +39,11 @@ public class Play extends SCMusic {
     private static final String NOW_DESCRIPTION = "immediate playback of the provided track";
     private static final String OPT_NAME = "youtube-url";
     private static final String OPT_DESCRIPTION = "provide a youtube video or playlist to play";
-    // response related
+    // attributes to avoid scoping problems
     private String commandAction = null;
     private AudioTrackInfo trackInfo = null;
     private Status status = Status.ERROR;
+    private String url = null;
 
     public Play() {
         SubcommandData queue = new SubcommandData(QUEUE_NAME, QUEUE_DESCRIPTION);
@@ -65,7 +71,7 @@ public class Play extends SCMusic {
     @Override
     @SuppressWarnings("null")
     public Reply execute(@Nonnull SlashCommandInteractionEvent event) throws Exception {
-        String url = event.getOption(OPT_NAME).getAsString();
+        url = event.getOption(OPT_NAME).getAsString();
         Member member = event.getMember();
         String subcommandName = event.getSubcommandName();
         Guild guild = event.getGuild();
@@ -80,7 +86,27 @@ public class Play extends SCMusic {
                         "you have to be in the same AudioChannel");
             }
         }
-
+        // check if provided url is from spotify
+        if (url.contains("spotify")) {
+            if (url.contains("track") == false)
+                return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
+                        "I just support spotify **tracks**");
+            // get track from spotify
+            Track track = SpotifyHelper.getTrack(url);
+            // build searchTerm
+            String artists = "";
+            for (ArtistSimplified artistSimplified : track.getArtists()) {
+                artists += " " + artistSimplified.getName();
+            }
+            String searchTerm = track.getName() + artists;
+            url = getYouTubeUrlBySearchTerm(searchTerm);
+        } else if (url.contains("http") == false) {
+            /**
+             * assume that url is not containing an url but a searchTerm to look
+             * up in youtube
+             */
+            url = getYouTubeUrlBySearchTerm(url);
+        }
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
@@ -137,10 +163,23 @@ public class Play extends SCMusic {
         return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo);
     }
 
-    private void connectTo(Member member) {
+    @SuppressWarnings("null")
+    private void connectTo(@Nonnull Member member) {
         final VoiceChannel myChannel = (VoiceChannel) member.getVoiceState().getChannel();
         final AudioManager audioManager = member.getGuild().getAudioManager();
         audioManager.openAudioConnection(myChannel);
+    }
+
+    private String getYouTubeUrlBySearchTerm(@Nonnull String searchTerm) {
+        YouTubeHistory history = new YouTubeHistory();
+        if (history.contains(searchTerm))
+            return history.get(searchTerm);
+        else {
+            String url = YouTubeHelper.getVideoURLBySearchTerm(searchTerm);
+            // save searchTerm to reduce quota usage
+            history.add(searchTerm, url);
+            return url;
+        }
     }
 
 }
