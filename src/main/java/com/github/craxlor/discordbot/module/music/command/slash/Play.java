@@ -81,66 +81,62 @@ public class Play extends SCMusic {
             }
         }
 
-        // validate url
-        if (url.contains("https://www.youtube.com/") == false) {
-            commandAction = "the provided url cannot be used";
-        } else {
-            // connect to member
-            final VoiceChannel myChannel = (VoiceChannel) member.getVoiceState().getChannel();
-            final AudioManager audioManager = member.getGuild().getAudioManager();
-            audioManager.openAudioConnection(myChannel);
+        // connect to member
+        final VoiceChannel myChannel = (VoiceChannel) member.getVoiceState().getChannel();
+        final AudioManager audioManager = member.getGuild().getAudioManager();
+        audioManager.openAudioConnection(myChannel);
 
-            GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
-                @Override
-                public void trackLoaded(AudioTrack track) {
-                    switch (subcommandName) {
-                        case QUEUE_NAME -> {
-                            musicManager.scheduler.queue(track);
-                            // check if the track is played immediately
-                            if (musicManager.player.getPlayingTrack().equals(track)) {
-                                commandAction = "playing " + track.getInfo().title;
-                            } else {
-                                commandAction = track.getInfo().title + " has been added to queue";
-                            }
-                        }
-                        case NEXT_NAME -> {
-                            musicManager.scheduler.addOnTopOfQueue(track, true);
-                            commandAction = track.getInfo().title + " is now at the top of the queue";
-                        }
-                        case NOW_NAME -> {
-                            musicManager.scheduler.addOnTopOfQueue(track, false);
+        GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                switch (subcommandName) {
+                    case QUEUE_NAME -> {
+                        musicManager.scheduler.queue(track);
+                        // check if the track is played immediately
+                        if (musicManager.player.getPlayingTrack().equals(track)) {
                             commandAction = "playing " + track.getInfo().title;
+                        } else {
+                            commandAction = track.getInfo().title + " has been added to queue";
                         }
                     }
-                    trackInfo = track.getInfo();
-                    status = Status.SUCCESS;
-                }
-
-                @Override
-                public void playlistLoaded(AudioPlaylist playlist) {
-                    final List<AudioTrack> tracks = playlist.getTracks();
-                    switch (subcommandName) {
-                        case QUEUE_NAME -> musicManager.scheduler.addToQueue(tracks);
-                        case NEXT_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, true);
-                        case NOW_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, false);
+                    case NEXT_NAME -> {
+                        musicManager.scheduler.addOnTopOfQueue(track, true);
+                        commandAction = track.getInfo().title + " is now at the top of the queue";
                     }
-                    commandAction = "added playlist " + "[" + playlist.getName() + "](" + url + ")" + " to queue";
-                    status = Status.SUCCESS;
+                    case NOW_NAME -> {
+                        musicManager.scheduler.addOnTopOfQueue(track, false);
+                        commandAction = "playing " + track.getInfo().title;
+                    }
                 }
+                trackInfo = track.getInfo();
+                status = Status.SUCCESS;
+            }
 
-                @Override
-                public void noMatches() {
-                    commandAction = ":x: Nothing found";
-                    status = Status.FAIL;
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                final List<AudioTrack> tracks = playlist.getTracks();
+                switch (subcommandName) {
+                    case QUEUE_NAME -> musicManager.scheduler.addToQueue(tracks);
+                    case NEXT_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, true);
+                    case NOW_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, false);
                 }
+                commandAction = "added playlist " + "[" + playlist.getName() + "](" + url + ")" + " to queue";
+                status = Status.SUCCESS;
+            }
 
-                @Override
-                public void loadFailed(FriendlyException exception) {
-                    commandAction = ":x: Could not load \n" + exception.getMessage();
-                    status = Status.FAIL;
-                }
-            }).get();
-        }
+            @Override
+            public void noMatches() {
+                commandAction = ":x: Nothing found";
+                status = Status.FAIL;
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                commandAction = ":x: Could not load \n" + exception.getMessage();
+                status = Status.FAIL;
+            }
+        }).get();
+
         return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo);
     }
 }
