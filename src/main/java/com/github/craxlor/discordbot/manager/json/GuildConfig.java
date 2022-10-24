@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class GuildConfig extends JSONFile {
 
-    private static String directoryPath = "resources" + File.separator + "guildconfigs" + File.separator;
+    private static String directoryPath = "resources" + File.separator + "guildconfigs";
     protected Guild guild;
 
     public GuildConfig(Guild guild) {
