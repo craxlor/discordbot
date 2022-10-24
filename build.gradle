@@ -27,8 +27,8 @@ repositories{
 }
 
 dependencies {
-    implementation project(':utilities')
-    implementation project(':jReddit')
+    implementation files('D:\\Coding_projects\\java\\utilities\\build\\libs\\utilities.jar')
+    implementation files('D:\\Coding_projects\\java\\jReddit\\build\\libs\\jReddit.jar')
     implementation 'net.dv8tion:JDA:5.0.0-alpha.20'
     implementation 'com.sedmelluq:lavaplayer:1.3.78'
     implementation 'ch.qos.logback:logback-classic:1.2.3'

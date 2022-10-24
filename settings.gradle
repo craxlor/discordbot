@@ -8,8 +8,3 @@
  */
 
 rootProject.name = 'discordbot'
-
-include(':utilities')
-project(':utilities').projectDir = file('../utilities')
-include(':jReddit')
-project(':jReddit').projectDir = file('../jReddit')
