@@ -107,6 +107,11 @@ public class Play extends SCMusic {
              */
             url = getYouTubeUrlBySearchTerm(url);
         }
+
+        if (url.equals("quota"))
+            return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
+                    "the daily quota limit has been reached. therfore I cannot do this action");
+
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, url, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
