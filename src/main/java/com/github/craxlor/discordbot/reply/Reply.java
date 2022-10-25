@@ -3,6 +3,8 @@ package com.github.craxlor.discordbot.reply;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.simple.JSONObject;
+
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
@@ -45,11 +47,11 @@ public class Reply {
 
     @SuppressWarnings("null")
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
-            @Nullable AudioTrackInfo audioTrackInfo) {
+            @Nullable AudioTrackInfo audioTrackInfo, @Nullable JSONObject videoInformation) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        if (audioTrackInfo != null)
-            embedBuilder.addMusicFields(audioTrackInfo);
         embedBuilder.setCommandReply(event, status, statusDetail);
+        if (audioTrackInfo != null)
+            embedBuilder.addMusicFields(audioTrackInfo, videoInformation);
         messageEmbed = embedBuilder.build(event.getMember());
         // send reply message in music log channel
         Guild guild = event.getGuild();
@@ -60,7 +62,17 @@ public class Reply {
     }
 
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail) {
-        return onMusic(event, status, statusDetail, null);
+        return onMusic(event, status, statusDetail, null, null);
+    }
+
+    public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
+            AudioTrackInfo audioTrackInfo) {
+        return onMusic(event, status, statusDetail, audioTrackInfo, null);
+    }
+
+    public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
+            JSONObject videoInformation) {
+        return onMusic(event, status, statusDetail, null, videoInformation);
     }
 
     public void send() {
