@@ -16,7 +16,7 @@ public class YouTubeStorage extends JSONFile {
     private int quota;
 
     private YouTubeStorage() {
-        super("resources", "youtubehistory");
+        super("resources", "youtubestorage");
         storage = root.get("storage") == null ? new JSONArray() : (JSONArray) root.get("storage");
         quota = root.get("quota") == null ? 10000 : ((Long) root.get("quota")).intValue();
     }
