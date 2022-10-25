@@ -2,10 +2,13 @@ package com.github.craxlor.discordbot.module.music.util;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.json.simple.JSONObject;
 
 import com.github.craxlor.Secrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -16,12 +19,15 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeRequestInitializer;
 import com.google.api.services.youtube.model.SearchListResponse;
+import com.google.api.services.youtube.model.SearchResult;
 
 public class YouTubeHelper {
 
     private static final Logger logger = com.github.craxlor.utilities.Logger.getLogger("youtube");
 
-    public static YouTube getService() throws GeneralSecurityException, IOException {
+    public static final String YOUTUBE_VIDEO_PREFIX = "https://www.youtube.com/watch?v=";
+
+    private static YouTube getService() throws GeneralSecurityException, IOException {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         HttpRequestInitializer httpRequestInitializer = new HttpRequestInitializer() {
             @Override
@@ -39,32 +45,63 @@ public class YouTubeHelper {
     /**
      * 
      * @param searchTerm
-     * @return null on error<p>
-     *         "quota" if the daily quota limit has been reached<p>
-     *         a youtube video url if everything goes right
+     * @return null on error
+     *         <p>
+     *         String array with 5 entries (searchTerm, videoTitle, videoId,
+     *         channelId, thumbnailUrl)
+     *         <p>
+     *         String array with 1 entry (quota) if quota limit has been
+     *         reached
      */
     @Nullable
-    public static String getVideoURLBySearchTerm(@Nonnull String searchTerm) {
-        YouTubeHistory youTubeHistory = YouTubeHistory.getInstance();
-        if (youTubeHistory.getQuota() < 100)
-            return "quota";
+    @SuppressWarnings("unchecked")
+    public static JSONObject findVideo(@Nonnull String searchTerm) {
+        YouTubeStorage youTubeStorage = YouTubeStorage.getInstance();
+        // check if the searchTerm has been used already
+        if (youTubeStorage.containsSearchTerm(searchTerm)) {
+            return youTubeStorage.getBySearchTerm(searchTerm);
+        }
+        if (youTubeStorage.getQuota() < 100) {
+            JSONObject error = new JSONObject();
+            error.put("error", "quota limit reached");
+            return error;
+        }
         try {
-            YouTube youtubeService = getService();
-            YouTube.Search.List request = youtubeService.search()
-                    .list("snippet");
+            YouTube.Search.List request = getService().search().list("snippet");
             SearchListResponse response = request
                     .setQ(searchTerm)
                     .setSafeSearch("none")
                     .setType("video")
                     .execute();
-            youTubeHistory.trackQuota(100);
-            // return URL for the 1st video from the response
-            return "https://www.youtube.com/watch?v=" + response.getItems().get(0).getId().getVideoId();
+            // calculate costs for the executed request
+            youTubeStorage.trackQuota(100);
+            // prepare checks to get best matching searchresult
+            JSONObject entry = new JSONObject();
+            entry.put("searchTerm", searchTerm);
+            int searchTermPartMatches = 0;
+            // get all searchresults
+            List<SearchResult> SearchResults = response.getItems();
+            for (SearchResult searchResult : SearchResults) {
+                entry.put("vieoTitle", searchResult.getSnippet().getTitle());
+                entry.put("videoId", searchResult.getId().getVideoId());
+                entry.put("channelId", searchResult.getSnippet().getChannelId());
+                entry.put("thumbnailUrl", searchResult.getSnippet().getThumbnails().getHigh().getUrl());
+                // find searchTermParts in videoTitle
+                for (String searchTermPart : searchTerm.split(" ")) {
+                    if (searchResult.getSnippet().getTitle().contains(searchTermPart))
+                        searchTermPartMatches++;
+                }
+                // break if more than half of the searchTermParts have been found in the
+                // videoTitle
+                if (searchTermPartMatches >= searchTerm.split(" ").length / 2)
+                    break;
+            }
+            youTubeStorage.add(entry);
+            return entry;
         } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace();
             logger.warning(e.getMessage());
             return null;
         }
-
     }
 }
