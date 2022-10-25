@@ -13,40 +13,36 @@ public class YouTubeHistory extends JSONFile {
 
     public YouTubeHistory() {
         super("resources", "youtubehistory");
-        if ((history = (JSONArray) root.get("history")) == null) {
-            history = new JSONArray();
-        }
+        history = root.get("history") == null ? new JSONArray() : (JSONArray) root.get("history");
     }
 
     @SuppressWarnings("unchecked")
     public boolean add(String key, String value) {
-        JSONObject object = new JSONObject();
-        object.put("key", key);
-        object.put("value", value);
-        boolean b = history.add(object);
+        JSONObject entry = new JSONObject();
+        entry.put("key", key);
+        entry.put("value", value);
+        boolean b = history.add(entry);
         put("history", history, true);
         return b;
     }
 
     public boolean contains(String key) {
-        JSONObject e;
-        for (Object entry : history) {
-            e = (JSONObject) entry;
-            if (((String) e.get("key")).equals(key)) {
+        JSONObject entry;
+        for (Object o : history) {
+            entry = (JSONObject) o;
+            if (((String) entry.get("key")).equals(key))
                 return true;
-            }
         }
         return false;
     }
 
     @Nullable
     public String get(String key) {
-        JSONObject e;
-        for (Object entry : history) {
-            e = (JSONObject) entry;
-            if (((String) e.get("key")).equals(key)) {
-                return (String) e.get("value");
-            }
+        JSONObject entry;
+        for (Object o : history) {
+            entry = (JSONObject) o;
+            if (((String) entry.get("key")).equals(key))
+                return (String) entry.get("value");
         }
         return null;
     }
