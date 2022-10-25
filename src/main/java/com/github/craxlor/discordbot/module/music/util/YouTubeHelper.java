@@ -26,6 +26,7 @@ public class YouTubeHelper {
     private static final Logger logger = com.github.craxlor.utilities.Logger.getLogger("youtube");
 
     public static final String YOUTUBE_VIDEO_PREFIX = "https://www.youtube.com/watch?v=";
+    public static final String YOUTUBE_CHANNEL_PREFIX = "https://www.youtube.com/channel/";
 
     private static YouTube getService() throws GeneralSecurityException, IOException {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
@@ -70,6 +71,7 @@ public class YouTubeHelper {
             YouTube.Search.List request = getService().search().list("snippet");
             SearchListResponse response = request
                     .setQ(searchTerm)
+                    .setOrder("relevance")
                     .setSafeSearch("none")
                     .setType("video")
                     .execute();
@@ -78,7 +80,6 @@ public class YouTubeHelper {
             // prepare checks to get best matching searchresult
             JSONObject entry = new JSONObject();
             entry.put("searchTerm", searchTerm);
-            int searchTermPartMatches = 0;
             // get all searchresults
             List<SearchResult> SearchResults = response.getItems();
             for (SearchResult searchResult : SearchResults) {
@@ -86,10 +87,13 @@ public class YouTubeHelper {
                 entry.put("videoId", searchResult.getId().getVideoId());
                 entry.put("channelId", searchResult.getSnippet().getChannelId());
                 entry.put("thumbnailUrl", searchResult.getSnippet().getThumbnails().getHigh().getUrl());
-                // find searchTermParts in videoTitle
+                int searchTermPartMatches = 0;
                 for (String searchTermPart : searchTerm.split(" ")) {
-                    if (searchResult.getSnippet().getTitle().contains(searchTermPart))
-                        searchTermPartMatches++;
+                    for (String titlePart : searchResult.getSnippet().getTitle().split(" ")) {
+                        if (titlePart.equalsIgnoreCase(searchTermPart)) {
+                            searchTermPartMatches++;
+                        }
+                    }
                 }
                 // break if more than half of the searchTermParts have been found in the
                 // videoTitle
