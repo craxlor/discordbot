@@ -171,13 +171,13 @@ public class Play extends SCMusic {
     }
 
     private String getYouTubeUrlBySearchTerm(@Nonnull String searchTerm) {
-        YouTubeHistory history = new YouTubeHistory();
-        if (history.contains(searchTerm))
-            return history.get(searchTerm);
+        YouTubeHistory youTubeHistory = YouTubeHistory.getInstance();
+        if (youTubeHistory.contains(searchTerm))
+            return youTubeHistory.get(searchTerm);
         else {
             String url = YouTubeHelper.getVideoURLBySearchTerm(searchTerm);
             // save searchTerm to reduce quota usage
-            history.add(searchTerm, url);
+            youTubeHistory.add(searchTerm, url);
             return url;
         }
     }
