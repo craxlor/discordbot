@@ -44,6 +44,10 @@ public class YouTubeHelper {
      */
     @Nullable
     public static String getVideoURLBySearchTerm(@Nonnull String searchTerm) {
+        YouTubeHistory youTubeHistory = YouTubeHistory.getInstance();
+        if (youTubeHistory.getQuota() < 100)
+            return null;
+
         try {
             YouTube youtubeService = getService();
             YouTube.Search.List request = youtubeService.search()
@@ -53,6 +57,7 @@ public class YouTubeHelper {
                     .setSafeSearch("none")
                     .setType("video")
                     .execute();
+            youTubeHistory.trackQuota(100);
             // return URL for the 1st video from the response
             return "https://www.youtube.com/watch?v=" + response.getItems().get(0).getId().getVideoId();
         } catch (IOException | GeneralSecurityException e) {
