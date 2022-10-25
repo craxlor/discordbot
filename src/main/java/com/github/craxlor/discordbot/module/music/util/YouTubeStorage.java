@@ -35,7 +35,6 @@ public class YouTubeStorage extends JSONFile {
     }
 
     public boolean containsVideoId(String videoId) {
-        System.out.println(videoId);
         JSONObject entry;
         for (Object o : storage) {
             entry = (JSONObject) o;
