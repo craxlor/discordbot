@@ -7,8 +7,11 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.simple.JSONObject;
+
 import com.github.craxlor.discordbot.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.module.music.util.YouTubeHelper;
 import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
@@ -39,7 +42,22 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
     }
 
     @SuppressWarnings("null")
-    public EmbedBuilder addMusicFields(@Nullable AudioTrackInfo trackInfo) {
+    public EmbedBuilder addMusicFields(@Nullable AudioTrackInfo trackInfo, @Nullable JSONObject videoInformation) {
+        // thumbnail
+        if (videoInformation != null) {
+            String thumbnailURL = (String) videoInformation.get("thumbnailUrl");
+            setThumbnail(thumbnailURL);
+        }
+        // track name field
+        if (videoInformation != null) {
+            String videoURL = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
+            String videoTitle = (String) videoInformation.get("vieoTitle");
+            addField("track", "[" + videoTitle + "](" + videoURL + ")", false);
+
+        } else if (trackInfo != null) {
+            addField("track", "[" + trackInfo.title + "](" + trackInfo.uri + ")", false);
+        }
+        // track length field
         if (trackInfo != null) {
             long minutes = TimeUnit.MILLISECONDS.toMinutes(trackInfo.length);
             long seconds = TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60;
@@ -47,9 +65,15 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
             if (second.length() < 2) {
                 second = "0" + second;
             }
-            addField("track", "[" + trackInfo.title + "](" + trackInfo.uri + ")", true);
             addField("length", minutes + ":" + second + " minutes", true);
-            addField("youtube channel", trackInfo.author, true);
+        }
+        // channel field
+        if (trackInfo != null) {
+            if (videoInformation != null) {
+                String channelURL = YouTubeHelper.YOUTUBE_CHANNEL_PREFIX + (String) videoInformation.get("channelId");
+                addField("youtube channel", "[" + trackInfo.author + "](" + channelURL + ")", true);
+            } else
+                addField("youtube channel", trackInfo.author, true);
         }
         return this;
     }
@@ -68,7 +92,7 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
         String commmandName = SlashCommandInteractionHandler.getCommandName(event);
         setTitle(status.toString());
         setDescription(statusDetail);
-        addField("Command", commmandName, false);
+        // addField("Command", commmandName, false);
         switch (status) {
             case SUCCESS -> {
                 setThumbnail("https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/2705.png");
