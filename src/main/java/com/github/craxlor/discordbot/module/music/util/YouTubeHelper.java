@@ -37,17 +37,17 @@ public class YouTubeHelper {
     }
 
     /**
-     * Call function to create API service object. Define and
-     * execute API request. Print API response.
-     *
-     * @throws GeneralSecurityException, IOException, GoogleJsonResponseException
+     * 
+     * @param searchTerm
+     * @return null on error<p>
+     *         "quota" if the daily quota limit has been reached<p>
+     *         a youtube video url if everything goes right
      */
     @Nullable
     public static String getVideoURLBySearchTerm(@Nonnull String searchTerm) {
         YouTubeHistory youTubeHistory = YouTubeHistory.getInstance();
         if (youTubeHistory.getQuota() < 100)
-            return null;
-
+            return "quota";
         try {
             YouTube youtubeService = getService();
             YouTube.Search.List request = youtubeService.search()
