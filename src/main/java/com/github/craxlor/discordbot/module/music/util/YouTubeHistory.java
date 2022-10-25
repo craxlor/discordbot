@@ -9,11 +9,21 @@ import com.github.craxlor.utilities.JSONFile;
 
 public class YouTubeHistory extends JSONFile {
 
-    private JSONArray history;
+    private static YouTubeHistory INSTANCE;
 
-    public YouTubeHistory() {
+    private JSONArray history;
+    private int quota;
+
+    private YouTubeHistory() {
         super("resources", "youtubehistory");
-        history = root.get("history") == null ? new JSONArray() : (JSONArray) root.get("history");
+        history = root.get("searchHistory") == null ? new JSONArray() : (JSONArray) root.get("searchHistory");
+        quota = root.get("quota") == null ? 10000 : (int) root.get("quota");
+    }
+
+    public static YouTubeHistory getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new YouTubeHistory();
+        return INSTANCE;
     }
 
     @SuppressWarnings("unchecked")
@@ -22,7 +32,7 @@ public class YouTubeHistory extends JSONFile {
         entry.put("key", key);
         entry.put("value", value);
         boolean b = history.add(entry);
-        put("history", history, true);
+        put("searchHistory", history, false);
         return b;
     }
 
@@ -45,5 +55,14 @@ public class YouTubeHistory extends JSONFile {
                 return (String) entry.get("value");
         }
         return null;
+    }
+
+    public void trackQuota(int cost) {
+        quota -= cost;
+        put("quota", quota, true);
+    }
+
+    public int getQuota() {
+        return quota;
     }
 }
