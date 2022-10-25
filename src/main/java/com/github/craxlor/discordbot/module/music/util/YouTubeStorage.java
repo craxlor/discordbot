@@ -18,7 +18,7 @@ public class YouTubeStorage extends JSONFile {
     private YouTubeStorage() {
         super("resources", "youtubehistory");
         storage = root.get("storage") == null ? new JSONArray() : (JSONArray) root.get("storage");
-        quota = root.get("quota") == null ? 10000 : (int) root.get("quota");
+        quota = root.get("quota") == null ? 10000 : ((Long) root.get("quota")).intValue();
     }
 
     public static YouTubeStorage getInstance() {
@@ -35,6 +35,7 @@ public class YouTubeStorage extends JSONFile {
     }
 
     public boolean containsVideoId(String videoId) {
+        System.out.println(videoId);
         JSONObject entry;
         for (Object o : storage) {
             entry = (JSONObject) o;
