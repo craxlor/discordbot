@@ -1,7 +1,6 @@
 package com.github.craxlor.discordbot.manager.json;
 
 import java.awt.Color;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class GuildConfig extends JSONFile {
 
-    private static String directoryPath = "resources" + File.separator + "guildconfigs";
+    private static String directoryPath = "resources/guildconfigs";
     protected Guild guild;
 
     public GuildConfig(Guild guild) {
