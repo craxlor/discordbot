@@ -11,14 +11,18 @@ import com.github.craxlor.discordbot.manager.Logger;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class MusicVoiceConnectionHandler extends ListenerAdapter {
 
     @Override
-    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {
+    public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
+        if (event.getChannelJoined() == null) {
+            // exit cause noone joined a channel -> bot didn't join a channel
+            return;
+        }
         // check if the bot joined to play music and handle auto disconnect after 5mins
         final Member member = event.getMember();
         final Member bot = event.getGuild().getSelfMember();
