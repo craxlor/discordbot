@@ -4,5 +4,5 @@ bin
 build
 resources/guildconfigs
 resources/logs
-resources/youtubehistory.json
+resources/youtubestorage.json
 src/main/java/com/github/craxlor/discordbot/Secrets.java
