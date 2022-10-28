@@ -27,7 +27,7 @@ public class Shutdown extends SCDev {
     @Override
     @SuppressWarnings("null")
     public Reply execute(SlashCommandInteractionEvent event) throws Exception {
-        new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "bot is going offline").send();
+        new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "The Bot is going offline!").send();
         GuildManager.getGuildManager(event.getGuild()).getLogger().logCommand(Status.SUCCESS, "successful execution",
                 SlashCommandInteractionHandler.getCommandName(event), event.getMember().getEffectiveName());
         Thread.sleep(1000);

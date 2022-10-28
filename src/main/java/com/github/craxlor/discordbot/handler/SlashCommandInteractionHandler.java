@@ -28,14 +28,14 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
         String statusDetail = "";
         // command has not been found
         if (slashCommand == null) {
-            statusDetail = "couldn't find command";
+            statusDetail = "unknown command";
             reply.onCommand(event, Status.ERROR, statusDetail);
             logger.logCommand(Status.ERROR, statusDetail, getCommandName(event), member.getEffectiveName());
             return;
         }
         // check if member is allowed to use the command
         else if (slashCommand.memberHasPermission(member, event.getGuild()) == false) {
-            statusDetail = "missing permisson";
+            statusDetail = "missing permission";
             logger.logCommand(Status.FAIL, statusDetail, getCommandName(event), member.getEffectiveName());
             reply.onCommand(event, Status.FAIL, statusDetail);
             return;

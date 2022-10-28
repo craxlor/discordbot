@@ -17,11 +17,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class Role extends SCAdmin {
 
 	private static final String ADMIN_NAME = "admin";
-	private static final String ADMIN_DESCRIPTION = "roles";
+	private static final String ADMIN_DESCRIPTION = "Sets the admin role.";
 	private static final String DJ_NAME = "dj";
-	private static final String DJ_DESCRIPTION = "roles";
+	private static final String DJ_DESCRIPTION = "Sets the dj role.";
 	private static final String OPT_NAME = "role";
-	private static final String OPT_DESCRIPTION = "role desc";
+	private static final String OPT_DESCRIPTION = "Select the role matching your choice.";
 
 	public Role() {
 		SubcommandData admin = new SubcommandData(ADMIN_NAME, ADMIN_DESCRIPTION);
@@ -54,11 +54,11 @@ public class Role extends SCAdmin {
 		switch (subcommandName) {
 			case ADMIN_NAME -> {
 				config.setAdminRole(role.getIdLong());
-				msg = role.getAsMention() + " has been set as admin";
+				msg = role.getAsMention() + " has been set as Admin role.";
 			}
 			case DJ_NAME -> {
 				config.setDJRole(role.getIdLong());
-				msg = role.getAsMention() + " has been set as dj";
+				msg = role.getAsMention() + " has been set as DJ role.";
 			}
 		}
 		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, msg);

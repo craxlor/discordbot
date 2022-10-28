@@ -52,10 +52,10 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
         if (videoInformation != null) {
             String videoURL = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
             String videoTitle = (String) videoInformation.get("vieoTitle");
-            addField("track", "[" + videoTitle + "](" + videoURL + ")", false);
+            addField("Track", "[" + videoTitle + "](" + videoURL + ")", false);
 
         } else if (trackInfo != null) {
-            addField("track", "[" + trackInfo.title + "](" + trackInfo.uri + ")", false);
+            addField("Track", "[" + trackInfo.title + "](" + trackInfo.uri + ")", false);
         }
         // track length field
         if (trackInfo != null) {
@@ -65,15 +65,15 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
             if (second.length() < 2) {
                 second = "0" + second;
             }
-            addField("length", minutes + ":" + second + " minutes", true);
+            addField("Length", minutes + ":" + second + " minutes", true);
         }
         // channel field
         if (trackInfo != null) {
             if (videoInformation != null) {
                 String channelURL = YouTubeHelper.YOUTUBE_CHANNEL_PREFIX + (String) videoInformation.get("channelId");
-                addField("youtube channel", "[" + trackInfo.author + "](" + channelURL + ")", true);
+                addField("Youtube channel", "[" + trackInfo.author + "](" + channelURL + ")", true);
             } else
-                addField("youtube channel", trackInfo.author, true);
+                addField("Youtube channel", trackInfo.author, true);
         }
         return this;
     }

@@ -21,7 +21,7 @@ public class Resume extends SCMusic {
     @Override
     @Nonnull
     public String getDescription() {
-        return "resume the paused track";
+        return "Resumes the paused track";
     }
 
     @Override
@@ -31,14 +31,14 @@ public class Resume extends SCMusic {
         Status status = Status.FAIL;
         AudioTrackInfo audioTrackInfo = null;
         if (musicManager.player.getPlayingTrack() == null) {
-            commandAction = "there's nothing to play";
+            commandAction = "There is nothing to play at the moment!";
         } else {
             if (musicManager.player.isPaused()) {
                 musicManager.scheduler.onPlayerResume(musicManager.player);
-                commandAction = ":play_pause: resume playback of the current track";
+                commandAction = ":play_pause: Resuming the playback of the current track.";
                 status = Status.SUCCESS;
             } else
-                commandAction = "a track is already playing";
+                commandAction = "There is already a track playing!";
             audioTrackInfo = musicManager.player.getPlayingTrack().getInfo();
         }
         return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, audioTrackInfo);

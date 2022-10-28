@@ -17,13 +17,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class Queue extends SCMusic {
     private static final String CLEAR_NAME = "clear";
-    private static final String CLEAR_DESCRIPTION = "clear queue";
+    private static final String CLEAR_DESCRIPTION = "Clears the current queue.";
     private static final String SHOW_NAME = "show";
-    private static final String SHOW_DESCRIPTION = "show queue";
-    private static final String SHUFFLE_NAME = "suffle";
-    private static final String SHUFFLE_DESCRIPTION = "shuffle queue";
+    private static final String SHOW_DESCRIPTION = "Shows the current queue.";
+    private static final String SHUFFLE_NAME = "shuffle";
+    private static final String SHUFFLE_DESCRIPTION = "Shuffles the current queue.";
     private static final String SIZE_NAME = "size";
-    private static final String SIZE_DESCRIPTION = "show queue size";
+    private static final String SIZE_DESCRIPTION = "Shows the current queue size.";
 
     public Queue() {
         SubcommandData clear = new SubcommandData(CLEAR_NAME, CLEAR_DESCRIPTION);
@@ -55,13 +55,13 @@ public class Queue extends SCMusic {
         String commandAction = "";
         if (subcommandName.equals(CLEAR_NAME)) {
             musicManager.scheduler.clearQueue();
-            commandAction = "the queue has been cleared by " + member.getAsMention();
+            commandAction = "the queue has been cleared by " + member.getAsMention() + ".";
         } else if (subcommandName.equals(SHOW_NAME)) {
             PrivateChannel memberPrivateChanel = member.getUser().openPrivateChannel().complete();
             String trackNames = "";
             final java.util.Queue<AudioTrack> queue = musicManager.scheduler.getQueue();
             if (queue.isEmpty())
-                commandAction = "queue is empty";
+                commandAction = "The queue is currently empty.";
             else {
                 int tracknumber = 1;
                 for (final AudioTrack track : queue) {
@@ -76,18 +76,18 @@ public class Queue extends SCMusic {
                 if (!trackNames.isBlank())
                     sendMessage(memberPrivateChanel, trackNames);
 
-                commandAction = "the queue will be listed in your DM's";
+                commandAction = "The current queue will be listed in your DM's.";
             }
         } else if (subcommandName.equals(SHUFFLE_NAME)) {
             if (musicManager.scheduler.getQueue().isEmpty()) {
-                commandAction = "shuffled an empty queue\npog you";
+                commandAction = "You shuffled an empty queue\n:kekw:";
             } else {
                 musicManager.scheduler.shuffle();
-                commandAction = ":twisted_rightwards_arrows: the queue was shuffled";
+                commandAction = ":twisted_rightwards_arrows: The queue has been shuffled.";
             }
         } else if (subcommandName.equals(SIZE_NAME)) {
             int size = musicManager.scheduler.getQueue().size();
-            commandAction = "There are " + size + " tracks in the queue";
+            commandAction = "There are " + size + " tracks in the current queue.";
         }
         return new Reply(event.deferReply(), false).onMusic(event, Status.SUCCESS, commandAction);
     }

@@ -18,13 +18,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class MusicLog extends SCAdmin {
 
     private static final String SET_NAME = "channel";
-    private static final String SET_DESCRIPTION = "set textchannel as music log";
+    private static final String SET_DESCRIPTION = "Sets a textchannel as a music log.";
     private static final String SET_OPT_NAME = "music-channel";
-    private static final String SET_OPT_DESCRIPTION = "select a textchannel where music commands will be logged";
+    private static final String SET_OPT_DESCRIPTION = "Select the textchannel where music commands should be logged.";
     private static final String REMOVE_NAME = "remove";
-    private static final String REMOVE_DESCRIPTION = "remove textchannel as music log";
+    private static final String REMOVE_DESCRIPTION = "Removes a textchannel as a music log.";
     private static final String REMOVE_OPT_DELETE_NAME = "delete";
-    private static final String REMOVE_OPT_DELETE_DESCRIPTION = "autoroom";
+    private static final String REMOVE_OPT_DELETE_DESCRIPTION = "Select if the channel should be deleted.";
 
     public MusicLog() {
         SubcommandData musicSet = new SubcommandData(SET_NAME, SET_DESCRIPTION);
@@ -61,7 +61,7 @@ public class MusicLog extends SCAdmin {
                 TextChannel tc = event.getOption(SET_OPT_NAME).getAsChannel()
                         .asTextChannel();
                 config.setMusicLog(tc.getIdLong());
-                msg = "music-log has been set to " + tc.getAsMention();
+                msg = "The music log channel has been set to " + tc.getAsMention() + ".";
                 status = Status.SUCCESS;
             }
             case REMOVE_NAME -> {
@@ -71,10 +71,10 @@ public class MusicLog extends SCAdmin {
                     OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
                     if (optionMapping != null && optionMapping.getAsBoolean())
                         event.getGuild().getTextChannelById(id).delete().queue();
-                    msg = "music-log has been removed";
+                    msg = "The music log channel has been removed.";
                     status = Status.SUCCESS;
                 } else {
-                    msg = "there is no music-log to remove";
+                    msg = "There is no music log channel to remove!";
                     status = Status.FAIL;
                 }
             }

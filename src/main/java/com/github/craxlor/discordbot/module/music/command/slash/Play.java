@@ -85,7 +85,7 @@ public class Play extends SCMusic {
             // check if member & bot are not in the same channel
             if (bot.getVoiceState().getChannel().getIdLong() != member.getVoiceState().getChannel().getIdLong()) {
                 return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                        "you have to be in the same AudioChannel");
+                        "You have to be in the same voice channel as the bot!");
             }
         }
 
@@ -113,7 +113,7 @@ public class Play extends SCMusic {
         else if (input.contains("open.spotify")) {
             if (input.contains("track") == false)
                 return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                        "I just support spotify **tracks**");
+                        "I only support spotify **tracks**!");
             String searchTerm = convertSpotifyUrlToSearchTerm(input);
             videoInformation = YouTubeHelper.findVideo(searchTerm);
             input = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
@@ -128,7 +128,7 @@ public class Play extends SCMusic {
 
         if (videoInformation != null && videoInformation.get("error") != null)
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                    "the daily quota limit has been reached. therfore I cannot do this action");
+                    "The daily quota limit has been reached. Therfore i cannot do this action!");
 
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, input, new AudioLoadResultHandler() {
             @Override
@@ -139,17 +139,17 @@ public class Play extends SCMusic {
                         musicManager.scheduler.queue(track);
                         // check if the track is played immediately
                         if (musicManager.player.getPlayingTrack().equals(track))
-                            commandAction = "playing " + track.getInfo().title;
+                            commandAction = "Playing: " + track.getInfo().title;
                         else
-                            commandAction = track.getInfo().title + " has been added to queue";
+                            commandAction = track.getInfo().title + " has been added to the queue.";
                     }
                     case NEXT_NAME -> {
                         musicManager.scheduler.addOnTopOfQueue(track, true);
-                        commandAction = track.getInfo().title + " is now at the top of the queue";
+                        commandAction = track.getInfo().title + " is now at the top of the queue.";
                     }
                     case NOW_NAME -> {
                         musicManager.scheduler.addOnTopOfQueue(track, false);
-                        commandAction = "playing " + track.getInfo().title;
+                        commandAction = "Playing: " + track.getInfo().title;
                     }
                 }
                 trackInfo = track.getInfo();

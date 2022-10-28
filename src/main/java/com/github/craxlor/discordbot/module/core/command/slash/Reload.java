@@ -22,7 +22,7 @@ public class Reload extends SCDev {
     @Override
     @Nonnull
     public String getDescription() {
-        return "reload guild commands";
+        return "Reloads guild commands.";
     }
 
     @Override
@@ -33,7 +33,7 @@ public class Reload extends SCDev {
         // update commandlist
         guild.updateCommands().queue();
         guild.updateCommands().addCommands(guildCommands.getGuildOnlyCommandsData()).queue();
-        return new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "update commandlist");
+        return new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "The Commandlist has been updated!");
     }
 
     @Override
