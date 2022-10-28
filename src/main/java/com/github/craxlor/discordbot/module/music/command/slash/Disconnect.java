@@ -23,14 +23,14 @@ public class Disconnect extends SCMusic {
     @Override
     @Nonnull
     public String getDescription() {
-        return "reset the queue and disconnect the bot";
+        return "Resets the queue and disconnects the bot from the channel.";
     }
 
     @Override
     public Reply execute(@Nonnull SlashCommandInteractionEvent event) throws Exception {
         disconnect(event.getGuild());
         return new Reply(event.deferReply(), true).onMusic(event, Status.SUCCESS,
-                "The queue was reset and the bot was disconnected");
+                "The queue has been resetted and the playback will be stopped.\nThe bot will now disconnect from the channel.");
     }
 
     public static void disconnect(Guild guild) {

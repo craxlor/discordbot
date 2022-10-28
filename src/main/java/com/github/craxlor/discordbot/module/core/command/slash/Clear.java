@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 public class Clear extends SCAdmin {
 
     private static final String OPT_NAME = "amount";
-    private static final String OPT_DESCRIPTION = "How many messages to prune (Default 100)";
+    private static final String OPT_DESCRIPTION = "How many messages should be deleted (Default 100)?";
 
     public Clear() {
         commandData.addOption(OptionType.INTEGER, OPT_NAME, OPT_DESCRIPTION);
@@ -28,7 +28,7 @@ public class Clear extends SCAdmin {
     @Override
     @Nonnull
     public String getDescription() {
-        return "clear the last messages from this chat";
+        return "Clears the last messages from this channel.";
     }
 
     @Override
@@ -42,7 +42,7 @@ public class Clear extends SCAdmin {
         event.getMessageChannel().getIterableHistory().takeAsync(amount)
                 .thenAccept(event.getMessageChannel()::purgeMessages);
 
-        return new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "deleting " + amount + " messages");
+        return new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "Deleted " + amount + " messages from this channel.");
     }
 
     @Override

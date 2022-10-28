@@ -25,8 +25,8 @@ public abstract class SCMusic extends SlashCommand {
         String errorMessage = "";
         // is member in a voiceChannel
         if (member.getVoiceState().inAudioChannel() == false) {
-            errorTitle = "missing AudioConnection";
-            errorMessage = "you have to be in an audioChannel";
+            errorTitle = "missing audio connection";
+            errorMessage = "you have to be in a voice channel";
             logger.logMusicPermissonError(errorTitle, errorMessage);
             return false;
         }
@@ -46,15 +46,15 @@ public abstract class SCMusic extends SlashCommand {
             // is bot in a voiceChannel
             Member bot = guild.getSelfMember();
             if (bot.getVoiceState().inAudioChannel() == false) {
-                errorTitle = "missing AudioConnection";
-                errorMessage = "the bot isn't even in an AudioChannel";
+                errorTitle = "missing audio connection";
+                errorMessage = "the bot is not in an voice channel";
                 logger.logMusicPermissonError(errorTitle, errorMessage);
                 return false;
             }
             // are member and bot in the same voiceChannel
             if (bot.getVoiceState().getChannel().getIdLong() != member.getVoiceState().getChannel().getIdLong()) {
-                errorTitle = "matching AudioConnection";
-                errorMessage = "you have to be in the same AudioChannel";
+                errorTitle = "matching  audio connection";
+                errorMessage = "you have to be in the same voice channel";
                 logger.logMusicPermissonError(errorTitle, errorMessage);
                 return false;
             }

@@ -17,23 +17,23 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 public class EmbedColor extends SCAdmin {
 
 	private static final String RGB_NAME = "rgb";
-	private static final String RGB_DESCRIPTION = "set color for all embedded messages from the bot";
+	private static final String RGB_DESCRIPTION = "Sets the color for all embedded messages from the bot by using rgb code.";
 	private static final String RGB_OPT_RED_NAME = "red";
-	private static final String RGB_OPT_RED_DESCRIPTION = "red value";
+	private static final String RGB_OPT_RED_DESCRIPTION = "Red value.";
 	private static final String RGB_OPT_GREEN_NAME = "green";
-	private static final String RGB_OPT_GREEN_DESCRIPTION = "green value";
+	private static final String RGB_OPT_GREEN_DESCRIPTION = "Green value.";
 	private static final String RGB_OPT_BLUE_NAME = "blue";
-	private static final String RGB_OPT_BLUE_DESCRIPTION = "blue value";
+	private static final String RGB_OPT_BLUE_DESCRIPTION = "Blue value.";
 
 	private static final String HEX_NAME = "hex";
-	private static final String HEX_DESCRIPTION = "set color for all embedded messages from the bot";
+	private static final String HEX_DESCRIPTION = "Sets the color for all embedded messages from the bot by using hex code.";
 	private static final String HEX_OPT_NAME = "hex";
-	private static final String HEX_OPT_DESCRIPTION = "example: #c7b299";
+	private static final String HEX_OPT_DESCRIPTION = "Insert a hex code. Example: #c7b299";
 
 	private static final String SET_NAME = "set";
-	private static final String SET_DESCRIPTION = "onfigure color for all embedded messages from the bot";
+	private static final String SET_DESCRIPTION = "Configure the color for all embedded messages from the bot";
 	private static final String REMOVE_NAME = "remove";
-	private static final String REMOVE_DESCRIPTION = "remove color";
+	private static final String REMOVE_DESCRIPTION = "Removes the set color for all embedded messages from the bot.";
 
 	public EmbedColor() {
 		// rgb
@@ -92,12 +92,12 @@ public class EmbedColor extends SCAdmin {
 			}
 			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().setEmbedColor(red, green, blue);
 			color = new Color(red, green, blue);
-			statusDetail = "color for embedded messages has been set to #"
+			statusDetail = "The color for embedded messages has been set to #."
 					+ Integer.toHexString(color.getRGB()).substring(2);
 		}
 		if (subcommandName.equals(REMOVE_NAME)) {
 			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().removeEmbedColor();
-			statusDetail = "color for embedded messages will be random now";
+			statusDetail = "The color for embedded messages will be random now.";
 		}
 		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
 	}

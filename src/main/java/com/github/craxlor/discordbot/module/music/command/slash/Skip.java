@@ -22,7 +22,7 @@ public class Skip extends SCMusic {
     @Override
     @Nonnull
     public String getDescription() {
-        return "skip current track";
+        return "Skips the current track.";
     }
 
     @Override
@@ -32,12 +32,12 @@ public class Skip extends SCMusic {
         AudioTrackInfo audioTrackInfo = null;
         Status status = Status.FAIL;
         if (musicManager.player.getPlayingTrack() == null) {
-            commandAction = "there's nothing to skip";
+            commandAction = "There is nothing to skip at the moment!";
         } else {
             musicManager.scheduler.nextTrack();
             status = Status.SUCCESS;
             if (musicManager.player.getPlayingTrack() == null) {
-                commandAction = ":fast_forward: Skipped to nothing";
+                commandAction = ":fast_forward: Skipped to nothing.\nThe Bot will be disconnected from the channel.";
                 Disconnect.disconnect(event.getGuild());
             } else {
                 commandAction = ":fast_forward: Skipped to "

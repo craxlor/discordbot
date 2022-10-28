@@ -25,15 +25,15 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class RedditGallery extends SCAdmin {
 
     private static final String CREATE_NAME = "create";
-    private static final String CREATE_DESCRIPTION = "create a redditgallery";
+    private static final String CREATE_DESCRIPTION = "Creates a reddit gallery.";
     private static final String CREATE_OPT_NAME = "subreddit";
-    private static final String CREATE_OPT_DESCRIPTION = "define a subreddit";
+    private static final String CREATE_OPT_DESCRIPTION = "Define a subreddit.";
     private static final String DELETE_NAME = "delete";
-    private static final String DELETE_DESCRIPTION = "delete a redditgallery";
+    private static final String DELETE_DESCRIPTION = "Deletes a reddit gallery.";
     private static final String DELETE_OPT_NAME = "gallery";
-    private static final String DELETE_OPT_DESCRIPTION = "select one of these";
+    private static final String DELETE_OPT_DESCRIPTION = "Select one of these";
     private static final String REMOVE_OPT_DELETE_NAME = "delete";
-    private static final String REMOVE_OPT_DELETE_DESCRIPTION = "autoroom";
+    private static final String REMOVE_OPT_DELETE_DESCRIPTION = "Select if the channel should be deleted.";
 
     private static final String CATEGORYNAME = "redditgalleries";
 
@@ -86,7 +86,7 @@ public class RedditGallery extends SCAdmin {
         SubReddit subReddit = reddit.getSubReddit(subredditName);
         if (subReddit == null) {
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                    "the subreddit: " + subredditName + " doesn't exist");
+                    "The subreddit: " + subredditName + " does not exist!\nPlease check for the correct spelling.");
         }
         Guild guild = event.getGuild();
         GuildManager guildManager = GuildManager.getGuildManager(guild);
@@ -112,7 +112,7 @@ public class RedditGallery extends SCAdmin {
         // reload tasks
         guildManager.getGalleryTasks().reloadTasks();
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS,
-                "created gallery for the subreddit: " + subredditName);
+                "Created a gallery for the subreddit: " + subredditName + ".");
     }
 
     @SuppressWarnings("null")
@@ -132,7 +132,7 @@ public class RedditGallery extends SCAdmin {
             galleryChannel.delete().queue();
 
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS,
-                "deleted gallery for the subreddit: " + galleryChannel.getName());
+                "Deleted the gallery for the subreddit: " + galleryChannel.getName() + ".");
     }
 
 }

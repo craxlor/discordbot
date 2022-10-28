@@ -22,7 +22,7 @@ public class Pause extends SCMusic {
     @Override
     @Nonnull
     public String getDescription() {
-        return "pause the current track";
+        return "Pauses the current track.";
     }
 
     @Override
@@ -32,13 +32,13 @@ public class Pause extends SCMusic {
         String commandAction = "";
         Status status = Status.FAIL;
         if (musicManager.player.getPlayingTrack() == null) {
-            commandAction = "There is no track playing at the moment";
+            commandAction = "There is no track playing at the moment!";
         } else {
             if (musicManager.player.isPaused()) {
                 commandAction = "The track was already paused.";
             } else {
                 musicManager.scheduler.onPlayerPause(musicManager.player);
-                commandAction = ":pause_button: The track was paused";
+                commandAction = ":pause_button: The current track has been paused!\nUse /resume to proceed with the playback.";
                 status = Status.SUCCESS;
             }
             audioTrackInfo = musicManager.player.getPlayingTrack().getInfo();

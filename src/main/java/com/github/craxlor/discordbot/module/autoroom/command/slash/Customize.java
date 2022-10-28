@@ -25,17 +25,17 @@ import net.dv8tion.jda.api.managers.channel.concrete.VoiceChannelManager;
 public class Customize extends SlashCommand {
 
     private static final String NAME_NAME = "name";
-    private static final String NAME_DESCRIPTION = "rename the channel. This can only be called 2 times within 10 minutes per channel!";
+    private static final String NAME_DESCRIPTION = "Renames the current channel. This can only be called 2 times within 10 minutes per channel!";
     private static final String NAME_OPT_NAME = "name";
-    private static final String NAME_OPT_DESCRIPTION = "insert new channel name";
+    private static final String NAME_OPT_DESCRIPTION = "Insert the new channel name.";
     private static final String SIZE_NAME = "size";
-    private static final String SIZE_DESCRIPTION = "set the channel size";
+    private static final String SIZE_DESCRIPTION = "Sets the channel size.";
     private static final String SIZE_OPT_NAME = "size";
-    private static final String SIZE_OPT_DESCRIPTION = "enter a number between 1 and 99";
+    private static final String SIZE_OPT_DESCRIPTION = "Enter a number between 1 and 99.";
     private static final String LOCK_NAME = "lock";
-    private static final String LOCK_DESCRIPTION = "toggle whether the channel is locked";
+    private static final String LOCK_DESCRIPTION = "Toggles whether the channel is locked or unlocked.";
     private static final String LOCK_OPT_NAME = "lock";
-    private static final String LOCK_OPT_DESCRIPTION = "lock or unlock the channel";
+    private static final String LOCK_OPT_DESCRIPTION = "Select True to lock or False to unlock the channel.";
 
     public Customize() {
         // rename subcommand
@@ -74,8 +74,8 @@ public class Customize extends SlashCommand {
             String name = event.getOption(NAME_OPT_NAME).getAsString();
             String oldName = autoroom.getName();
             autoroomManager.setName(name);
-            msg = "updated channel name from **" + oldName + "** to **" + name + "**"
-                    + "\nthis can only be called 2 times within 10 minutes per channel!";
+            msg = "The channel name has been updated from **" + oldName + "** to **" + name + "**."
+                    + "\nThis can only be called 2 times within 10 minutes per channel!";
         } else if (subcommandName.equals(SIZE_NAME)) {
             int size = event.getOption(SIZE_OPT_NAME).getAsInt();
             if (size < 2)
@@ -83,7 +83,7 @@ public class Customize extends SlashCommand {
             else if (size > 99)
                 size = 99;
             autoroomManager.setUserLimit(size);
-            msg = "updated channel size to " + size;
+            msg = "The channel size has been updated to " + size + ".";
         } else if (subcommandName.equals(LOCK_NAME)) {
             boolean bool = event.getOption(LOCK_OPT_NAME).getAsBoolean();
             List<PermissionOverride> rolePermissionOverrides = autoroom.getRolePermissionOverrides();
@@ -98,7 +98,7 @@ public class Customize extends SlashCommand {
                 for (PermissionOverride permissionOverride : rolePermissionOverrides) {
                     permissionOverride.getManager().setDenied(Permission.VOICE_CONNECT).queue();
                 }
-                msg = "channel has been **locked** for everyone except admins";
+                msg = "The channel has been **locked** for everyone.\nAdmins are still able to join this channel.";
             } else {
                 // reset access for @everyone
                 autoroom.getPermissionOverride(guild.getPublicRole()).delete().queue();
@@ -106,7 +106,7 @@ public class Customize extends SlashCommand {
                 for (PermissionOverride permissionOverride : rolePermissionOverrides) {
                     permissionOverride.getManager().clear(Permission.VOICE_CONNECT).queue();
                 }
-                msg = "channel has been **unlocked**";
+                msg = "The channel has been **unlocked**.\nEveryone will be able to join this channel.";
             }
         }
         autoroomManager.queue();
