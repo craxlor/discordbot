@@ -69,7 +69,7 @@ public class AutoroomHandler extends ListenerAdapter {
         long autoroomID;
         VoiceChannel autoroom;
         JSONArray autoroomArray = config.getAutorooms();
-        if (autoroomArray == null || autoroomArray.size() < 1)
+        if (autoroomArray == null || autoroomArray.isEmpty() || autoroomArray.size() < 1)
             return;
 
         for (Object o : autoroomArray) {
