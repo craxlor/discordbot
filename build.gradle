@@ -34,8 +34,9 @@ dependencies {
     implementation 'com.google.apis:google-api-services-youtube:v3-rev222-1.25.0'
 }
 
-shadowJar{
+shadowJar {
     archiveClassifier.set('')
+    append 'gradle.properties'
 }
 
 javadoc {
