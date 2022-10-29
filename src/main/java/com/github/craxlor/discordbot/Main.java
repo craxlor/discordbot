@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 public class Main {
     public static void main(String[] args) {
         try {
-            JDABuilder builder = JDABuilder.createDefault(Secrets.DISCORD_TOKEN);
+            JDABuilder builder = JDABuilder.createDefault(Properties.get("BOT_TOKEN"));
             builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
             builder.setChunkingFilter(ChunkingFilter.ALL);
             builder.setLargeThreshold(50);
