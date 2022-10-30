@@ -113,7 +113,7 @@ public class Play extends SCMusic {
         else if (input.contains("open.spotify")) {
             if (input.contains("track") == false)
                 return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                        "I only support spotify **tracks**!");
+                        "I just support spotify **tracks**!");
             String searchTerm = convertSpotifyUrlToSearchTerm(input);
             videoInformation = YouTubeHelper.findVideo(searchTerm);
             input = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
@@ -128,7 +128,7 @@ public class Play extends SCMusic {
 
         if (videoInformation != null && videoInformation.get("error") != null)
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                    "The daily quota limit has been reached. Therfore i cannot do this action!");
+                    "The daily quota limit has been reached. Therfore I cannot do this action!");
 
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, input, new AudioLoadResultHandler() {
             @Override

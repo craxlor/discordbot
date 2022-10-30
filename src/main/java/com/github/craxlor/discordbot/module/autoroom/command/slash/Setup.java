@@ -20,23 +20,23 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class Setup extends SCAdmin {
 
 	private static final String CREATE_NAME = "create";
-	private static final String CREATE_DESCRIPTION = "Defines an Autoroom trigger, which can be used to create Autorooms with specifc settings.";
+	private static final String CREATE_DESCRIPTION = "Defines an autoroom trigger, which can be used to create autorooms with specifc settings.";
 	private static final String EDIT_NAME = "edit";
-	private static final String EDIT_DESCRIPTION = "Edits a previously defined Autoroom trigger";
+	private static final String EDIT_DESCRIPTION = "Edits a previously defined autoroom trigger";
 	private static final String OPT_NAME_NAME = "name";
-	private static final String OPT_NAME_DESCRIPTION = "Set the naming pattern for Autorooms created. Additional variables: #username / #number.";
+	private static final String OPT_NAME_DESCRIPTION = "Set the naming pattern for autorooms created. Additional variables: username / number.";
 	private static final String OPT_TRIGGER_NAME = "trigger";
-	private static final String OPT_TRIGGER_DESCRIPTION = "Select the Voicechannel that will act as the trigger";
+	private static final String OPT_TRIGGER_DESCRIPTION = "Select the voice channel that will act as the trigger";
 	private static final String OPT_CATEGORY_NAME = "category";
 	private static final String OPT_CATEGORY_DESCRIPTION = "Select a category in which the created Autorooms should be placed in.";
 	private static final String OPT_PARENT_NAME = "parent";
-	private static final String OPT_PARENT_DESCRIPTION = "Select a parent object which determines the permissions of the Autorooms.";
+	private static final String OPT_PARENT_DESCRIPTION = "Select a parent object which determines the permissions of the autorooms.";
 	public static final String CHOICE_TRIGGER = "trigger";
 	public static final String CHOICE_CATEGORY = "category";
 	private static final String REMOVE_NAME = "remove";
-	private static final String REMOVE_DESCRIPTION = "Removes the Autoroom trigger configuration for a specific channel.";
+	private static final String REMOVE_DESCRIPTION = "Removes the autoroom trigger configuration for a specific channel.";
 	private static final String REMOVE_OPT_CHANNEL_NAME = "channel";
-	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "Select the Autoroom trigger to be removed.";
+	private static final String REMOVE_OPT_CHANNEL_DESCRIPTION = "Select the autoroom trigger to be removed.";
 	private static final String REMOVE_OPT_DELETE_NAME = "delete";
 	private static final String REMOVE_OPT_DELETE_DESCRIPTION = "Select if the channel should be deleted.";
 
@@ -106,18 +106,18 @@ public class Setup extends SCAdmin {
 					// prevent double bindings
 					if (config.isAutoroomTrigger(trigger.getIdLong()))
 						return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-								"The selceted channel is already an Autoroom trigger!");
+								"The selceted channel is already an autoroom trigger!");
 					Category category = event.getOption(OPT_CATEGORY_NAME)
 							.getAsChannel().asCategory();
 					String parent = event.getOption(OPT_PARENT_NAME).getAsString();
 					config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
 					statusDetail = """
-							Set %s as an Autoroom trigger.
+							Set %s as an autoroom trigger.
 							The Autorooms will be named: %s.""".formatted(trigger.getAsMention(), name);
 					return reply.onCommand(event, Status.SUCCESS, statusDetail);
 				} catch (IllegalStateException e) {
 					return reply.onCommand(event, Status.FAIL,
-							"Either the specified voicechannel is not a voicechannel or the specified Category is not a Category!");
+							"Either the specified voice channel is not a voice channel or the specified category is not a category!");
 				}
 			}
 			case EDIT_NAME -> {
@@ -125,7 +125,7 @@ public class Setup extends SCAdmin {
 				// check if the provided channel is a trigger
 				if (config.isAutoroomTrigger(trigger.getIdLong()) == false)
 					return reply.onCommand(event, Status.FAIL,
-							"The selected channel is not an Autoroom trigger!");
+							"The selected channel is not an autoroom trigger!");
 				OptionMapping option = event.getOption(OPT_NAME_NAME);
 				String name = null, parent = null;
 				long categoryID = -1;
@@ -134,7 +134,7 @@ public class Setup extends SCAdmin {
 				if (option != null) {
 					name = option.getAsString();
 					statusDetail = """
-							Changed the **Naming pattern** for created Autorooms\nfor the trigger %s to: **%s**"""
+							Changed the **Naming pattern** for created autorooms\nfor the trigger %s to: **%s**"""
 							.formatted(trigger.getAsMention(), name);
 				}
 				// category
@@ -144,7 +144,7 @@ public class Setup extends SCAdmin {
 						categoryID = category.getIdLong();
 						statusDetail += """
 
-								Changed the **Category** where Autorooms will be created\nfor the trigger %s to **%s**."""
+								Changed the **Category** where autorooms will be created\nfor the trigger %s to **%s**."""
 								.formatted(trigger.getAsMention(), category.getAsMention());
 					} catch (IllegalStateException e) {
 						return reply.onCommand(event, Status.FAIL, "The selected channel has to be a **Category**!");
@@ -172,11 +172,11 @@ public class Setup extends SCAdmin {
 					return reply.onCommand(event, Status.SUCCESS, statusDetail);
 				} else
 					return reply.onCommand(event, Status.FAIL,
-							"Could not identify " + trigger.getAsMention() + " as an Autoroom trigger!");
+							"Could not identify " + trigger.getAsMention() + " as an autoroom trigger!");
 			}
 		}
 		return reply.onCommand(event, Status.ERROR,
-				"Fatal error!\nPlease contact immediately the developer.\nDiscord Tag: Arty#1006");
+				"Fatal error!\nPlease contact the developer immediately.\nDiscord Tag: Arty#1006");
 	}
 
 	@Override

@@ -92,8 +92,8 @@ public class EmbedColor extends SCAdmin {
 			}
 			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().setEmbedColor(red, green, blue);
 			color = new Color(red, green, blue);
-			statusDetail = "The color for embedded messages has been set to #."
-					+ Integer.toHexString(color.getRGB()).substring(2);
+			statusDetail = "The color for embedded messages has been set to #"
+					+ Integer.toHexString(color.getRGB()).substring(2) + ".";
 		}
 		if (subcommandName.equals(REMOVE_NAME)) {
 			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().removeEmbedColor();

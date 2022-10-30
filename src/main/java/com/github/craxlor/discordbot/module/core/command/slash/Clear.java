@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 public class Clear extends SCAdmin {
 
     private static final String OPT_NAME = "amount";
-    private static final String OPT_DESCRIPTION = "How many messages should be deleted (Default 100)?";
+    private static final String OPT_DESCRIPTION = "How many messages should be deleted? (Default 100)";
 
     public Clear() {
         commandData.addOption(OptionType.INTEGER, OPT_NAME, OPT_DESCRIPTION);
