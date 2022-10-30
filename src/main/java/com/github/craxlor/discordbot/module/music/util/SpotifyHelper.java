@@ -8,8 +8,7 @@ import javax.annotation.Nullable;
 
 import org.apache.hc.core5.http.ParseException;
 
-import com.github.craxlor.discordbot.Secrets;
-
+import com.github.craxlor.discordbot.Properties;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
@@ -23,8 +22,8 @@ public class SpotifyHelper {
 
     public static SpotifyApi getSpotifyApi() throws ParseException, SpotifyWebApiException, IOException {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setClientId(Secrets.SPOTIFY_CLIENT_ID)
-                .setClientSecret(Secrets.SPOTIFY_CLIENT_SECRET)
+                .setClientId(Properties.get("SPOTIFY_CLIENT_ID"))
+                .setClientSecret(Properties.get("SPOTIFY_CLIENT_SECRET"))
                 .build();
         // clientcredentials
         ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();

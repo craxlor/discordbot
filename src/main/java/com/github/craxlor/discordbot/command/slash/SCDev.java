@@ -2,7 +2,7 @@ package com.github.craxlor.discordbot.command.slash;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.Secrets;
+import com.github.craxlor.discordbot.Properties;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,7 +17,7 @@ public abstract class SCDev extends SlashCommand {
 
     @Override
     public boolean memberHasPermission(@Nonnull Member member,@Nonnull  Guild guild) {
-        return member.getIdLong() == Secrets.DEVELOPER_ID;
+        return member.getIdLong() == Long.parseLong(Properties.get("DEVELOPER_ID"));
     }
 
 }

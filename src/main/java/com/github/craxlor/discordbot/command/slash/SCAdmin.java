@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.Secrets;
+import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
 
@@ -24,7 +24,7 @@ public abstract class SCAdmin extends SlashCommand {
     public boolean memberHasPermission(@Nonnull Member member, @Nonnull Guild guild) {
         GuildConfig config = (GuildConfig) GuildManager.getGuildManager(guild).getGuildConfig();
         // check if member is developer
-        if (member.getIdLong() == Secrets.DEVELOPER_ID) {
+        if (member.getIdLong() == Long.parseLong(Properties.get("DEVELOPER_ID"))) {
             return true;
         }
         // check if member is an admin

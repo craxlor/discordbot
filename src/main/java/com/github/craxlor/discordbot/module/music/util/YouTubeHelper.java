@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 import org.json.simple.JSONObject;
 
-import com.github.craxlor.Secrets;
+import com.github.craxlor.discordbot.Properties;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -35,8 +35,7 @@ public class YouTubeHelper {
             public void initialize(HttpRequest request) throws IOException {
             }
         };
-        YouTubeRequestInitializer youTubeRequestInitializer = new YouTubeRequestInitializer(
-                Secrets.YOUTUBE_API_KEY);
+        YouTubeRequestInitializer youTubeRequestInitializer = new YouTubeRequestInitializer(Properties.get("YOUTUBE_API_KEY"));
         return new YouTube.Builder(httpTransport, GsonFactory.getDefaultInstance(), httpRequestInitializer)
                 .setApplicationName("selfmadecrapcode")
                 .setYouTubeRequestInitializer(youTubeRequestInitializer).build();
