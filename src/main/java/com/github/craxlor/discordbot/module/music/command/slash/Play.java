@@ -34,13 +34,13 @@ import se.michaelthelin.spotify.model_objects.specification.Track;
 public class Play extends SCMusic {
 
     private static final String QUEUE_NAME = "queue";
-    private static final String QUEUE_DESCRIPTION = "queue a track";
+    private static final String QUEUE_DESCRIPTION = "Queues a track.";
     private static final String NEXT_NAME = "next";
-    private static final String NEXT_DESCRIPTION = "play track after the current track";
+    private static final String NEXT_DESCRIPTION = "Plays a track after the current track.";
     private static final String NOW_NAME = "now";
-    private static final String NOW_DESCRIPTION = "immediate playback of the provided track";
+    private static final String NOW_DESCRIPTION = "Starts immediate playback of the provided track.";
     private static final String OPT_NAME = "input";
-    private static final String OPT_DESCRIPTION = "provide a youtube video/playlist; spotify track url;searchTerm(yt-Search) to play";
+    private static final String OPT_DESCRIPTION = "Provide a Youtube video/playlist; Spotify track url; searchTerm(yt-Search) to play.";
     // attributes to avoid scoping problems in execute()
     private String commandAction = null;
     private AudioTrackInfo trackInfo = null;
