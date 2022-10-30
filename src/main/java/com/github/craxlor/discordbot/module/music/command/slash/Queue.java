@@ -80,7 +80,7 @@ public class Queue extends SCMusic {
             }
         } else if (subcommandName.equals(SHUFFLE_NAME)) {
             if (musicManager.scheduler.getQueue().isEmpty()) {
-                commandAction = "You shuffled an empty queue\n:kekw:";
+                commandAction = "You shuffled an empty queue :nerd:";
             } else {
                 musicManager.scheduler.shuffle();
                 commandAction = ":twisted_rightwards_arrows: The queue has been shuffled.";

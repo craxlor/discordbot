@@ -30,7 +30,7 @@ public class Disconnect extends SCMusic {
     public Reply execute(@Nonnull SlashCommandInteractionEvent event) throws Exception {
         disconnect(event.getGuild());
         return new Reply(event.deferReply(), true).onMusic(event, Status.SUCCESS,
-                "The queue has been resetted and the playback will be stopped.\nThe bot will now disconnect from the channel.");
+                "The queue has been reset and the playback will be stopped.\nThe bot will now disconnect from the channel.");
     }
 
     public static void disconnect(Guild guild) {

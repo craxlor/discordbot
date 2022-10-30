@@ -23,7 +23,7 @@ public class Module extends SCAdmin {
     private static final String ADD_NAME = "add";
     private static final String ADD_DESCRIPTION = "Adds a module.";
     private static final String REMOVE_NAME = "remove";
-    private static final String REMOVE_DESCRIPTION = "Remove a module.";
+    private static final String REMOVE_DESCRIPTION = "Removes a module.";
     private static final String OPT_NAME = "module-option";
     private static final String OPT_DESCRIPTION = "Select a module to add or remove.";
 
@@ -79,7 +79,7 @@ public class Module extends SCAdmin {
                 statusDetail = "Removed the module: **" + module + "**";
             }
         }
-        statusDetail += "\nUpdating commands will take a while. Be patient.";
+        statusDetail += "\nUpdating commands will take a while. Be patient. (:";
         // update commandlist
         guild.updateCommands().queue();
         guild.updateCommands().addCommands(commandlist.getGuildOnlyCommandsData()).queue();

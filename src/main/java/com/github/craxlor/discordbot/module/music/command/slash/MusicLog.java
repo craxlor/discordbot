@@ -61,7 +61,7 @@ public class MusicLog extends SCAdmin {
                 TextChannel tc = event.getOption(SET_OPT_NAME).getAsChannel()
                         .asTextChannel();
                 config.setMusicLog(tc.getIdLong());
-                msg = "The music log channel has been set to " + tc.getAsMention() + ".";
+                msg = "The music log has been set to " + tc.getAsMention() + ".";
                 status = Status.SUCCESS;
             }
             case REMOVE_NAME -> {
@@ -71,10 +71,10 @@ public class MusicLog extends SCAdmin {
                     OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
                     if (optionMapping != null && optionMapping.getAsBoolean())
                         event.getGuild().getTextChannelById(id).delete().queue();
-                    msg = "The music log channel has been removed.";
+                    msg = "The music log has been removed.";
                     status = Status.SUCCESS;
                 } else {
-                    msg = "There is no music log channel to remove!";
+                    msg = "There is no music log to remove!";
                     status = Status.FAIL;
                 }
             }

@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 public class Role extends SCAdmin {
 
 	private static final String ADMIN_NAME = "admin";
-	private static final String ADMIN_DESCRIPTION = "Sets the admin role.";
+	private static final String ADMIN_DESCRIPTION = "Sets the Admin role.";
 	private static final String DJ_NAME = "dj";
-	private static final String DJ_DESCRIPTION = "Sets the dj role.";
+	private static final String DJ_DESCRIPTION = "Sets the DJ role.";
 	private static final String OPT_NAME = "role";
 	private static final String OPT_DESCRIPTION = "Select the role matching your choice.";
 
