@@ -3,8 +3,8 @@ package com.github.craxlor.discordbot.module.core.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCDev;
-import com.github.craxlor.discordbot.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.reply.LogHelper;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -28,12 +28,13 @@ public class Shutdown extends SCDev {
     @SuppressWarnings("null")
     public Reply execute(SlashCommandInteractionEvent event) throws Exception {
         new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "The Bot is going offline!").send();
-        GuildManager.getGuildManager(event.getGuild()).getLogger().logCommand(Status.SUCCESS, "successful execution",
-                SlashCommandInteractionHandler.getCommandName(event), event.getMember().getEffectiveName());
+        GuildManager.getGuildManager(event.getGuild()).getLogger().info(
+                LogHelper.logCommand(event, Status.SUCCESS, "successful execution"));
         Thread.sleep(1000);
         event.getJDA().shutdown();
         System.exit(0);
         return null;
+
     }
 
     @Override

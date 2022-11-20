@@ -3,12 +3,13 @@ package com.github.craxlor.discordbot.module.music.util;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.json.simple.JSONObject;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.github.craxlor.discordbot.Properties;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -22,9 +23,6 @@ import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 
 public class YouTubeHelper {
-
-    private static final Logger logger = com.github.craxlor.utilities.Logger.getLogger("youtube");
-
     public static final String YOUTUBE_VIDEO_PREFIX = "https://www.youtube.com/watch?v=";
     public static final String YOUTUBE_CHANNEL_PREFIX = "https://www.youtube.com/channel/";
 
@@ -103,7 +101,8 @@ public class YouTubeHelper {
             return entry;
         } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace();
-            logger.warning(e.getMessage());
+            MDC.put("filename", "youtube");
+            LoggerFactory.getLogger("sift").warn(e.getMessage());
             return null;
         }
     }

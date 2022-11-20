@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
-import java.util.logging.Logger;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
@@ -20,12 +22,15 @@ public class GalleryTasks extends ArrayList<GalleryTask> {
     private Guild guild;
     private static int HOUR = 3600000;
     // private static int SECOND10 = 10000;
-    private static Logger logger = com.github.craxlor.utilities.Logger.getLogger("reddit");
+    private static Logger logger;
     private Timer timer;
 
     public GalleryTasks(Guild guild) {
         this.guild = guild;
         timer = new Timer();
+
+        MDC.put("filename", "reddit");
+        logger = LoggerFactory.getLogger("sift");
     }
 
     public void reloadTasks() {

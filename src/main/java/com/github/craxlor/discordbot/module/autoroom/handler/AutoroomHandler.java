@@ -4,11 +4,13 @@ import javax.annotation.Nonnull;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
 
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.Logger;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
 import com.github.craxlor.discordbot.module.autoroom.command.slash.Setup;
+import com.github.craxlor.discordbot.reply.LogHelper;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -49,14 +51,16 @@ public class AutoroomHandler extends ListenerAdapter {
         GuildConfig config = guildManager.getGuildConfig();
         long channelID = event.getChannel().getIdLong();
         String channelName = event.getChannel().getName();
-        Logger logger = (Logger) GuildManager.getGuildManager(event.getGuild()).getLogger();
+        Logger logger = GuildManager.getGuildManager(event.getGuild()).getLogger();
         if (config.isAutoroomTrigger(channelID)) {
             config.removeAutoroomTrigger(channelID);
-            logger.logAutoroom("an autoroom channel was manually deleted", "Trigger", channelName);
+            logger.info(LogHelper.logAutoroom(event.getGuild().getName(), channelName,
+                    "an autoroom channel was manually deleted", "Trigger"));
         }
         if (config.isAutoroom(channelID)) {
             config.removeAutoroom(channelID);
-            logger.logAutoroom("an autoroom channel was manually deleted", "Autoroom", channelName);
+            logger.info(LogHelper.logAutoroom(event.getGuild().getName(), channelName,
+                    "an autoroom channel was manually deleted", "Autoroom"));
         }
     }
 
@@ -86,7 +90,7 @@ public class AutoroomHandler extends ListenerAdapter {
     private void joinedAutoroomTrigger(Guild guild, GuildManager guildManager, VoiceChannel autoroomTrigger,
             Member member) {
         GuildConfig config = guildManager.getGuildConfig();
-        Logger logger = (Logger) guildManager.getLogger();
+        Logger logger = guildManager.getLogger();
         long autoroomTriggerID = autoroomTrigger.getIdLong();
         JSONObject autoroomTriggerJSON = config.getAutoroomTrigger(autoroomTriggerID);
 
@@ -134,17 +138,19 @@ public class AutoroomHandler extends ListenerAdapter {
         guild.moveVoiceMember(member, autoroom).queue();
         // add created voiceChannel to config
         config.addAutoroom(autoroom.getIdLong(), autoroomTrigger.getIdLong());
-        logger.logAutoroom("an autoroom channel was created automatically", "Autoroom", name);
+        logger.info(LogHelper.logAutoroom(guild.getName(), autoroom.getName(),
+                "an autoroom channel was created automatically", "Autoroom"));
     }
 
     private void leftAutoroom(Guild guild, GuildManager guildManager, VoiceChannel autoroom, Member member) {
         GuildConfig config = guildManager.getGuildConfig();
-        Logger logger = (Logger) guildManager.getLogger();
+        Logger logger = guildManager.getLogger();
         // delete dynamic voice channel if it is empty
         if (autoroom.getMembers().size() < 1) {
             config.removeAutoroom(autoroom.getIdLong());
             autoroom.delete().queue();
-            logger.logAutoroom("an autoroom channel was deleted automatically", "Autoroom", autoroom.getName());
+            logger.info(LogHelper.logAutoroom(guild.getName(), autoroom.getName(),
+                    "an autoroom channel was deleted automatically", "Autoroom"));
         }
 
     }

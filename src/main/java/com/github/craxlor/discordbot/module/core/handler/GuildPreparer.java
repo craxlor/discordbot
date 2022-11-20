@@ -1,4 +1,4 @@
-package com.github.craxlor.discordbot.handler;
+package com.github.craxlor.discordbot.module.core.handler;
 
 import javax.annotation.Nonnull;
 
@@ -12,11 +12,15 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class GuildPreparer extends ListenerAdapter {
 
     @Override
+    @SuppressWarnings("null")
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {
         // setup a GuildManager with its necessary components
         Guild guild = event.getGuild();
         GuildManager guildManager = GuildManager.getGuildManager(guild);
-        guildManager.getLogger().logGuildJoin();
+        guildManager.getLogger().info("""
+                joined a guild
+                    Guild: %s
+                    Owner: %s""".formatted(guild.getName(), guild.getOwner().getEffectiveName()));
         // config
         GuildConfig config = (GuildConfig) guildManager.getGuildConfig();
         config.setGuildName(guild.getName());

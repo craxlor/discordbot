@@ -1,14 +1,16 @@
 package com.github.craxlor.discordbot.module.music.util;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.hc.core5.http.ParseException;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.github.craxlor.discordbot.Properties;
+
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
@@ -17,8 +19,6 @@ import se.michaelthelin.spotify.requests.authorization.client_credentials.Client
 import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 public class SpotifyHelper {
-
-    private static final Logger logger = com.github.craxlor.utilities.Logger.getLogger("spotify");
 
     public static SpotifyApi getSpotifyApi() throws ParseException, SpotifyWebApiException, IOException {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -42,7 +42,8 @@ public class SpotifyHelper {
             return trackRequest.execute();
         } catch (ParseException | SpotifyWebApiException | IOException e) {
             e.printStackTrace();
-            logger.warning(e.getMessage());
+            MDC.put("filename", "spotify");
+            LoggerFactory.getLogger("sift").warn(e.getMessage());
             return null;
         }
 

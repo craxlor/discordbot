@@ -1,9 +1,9 @@
 package com.github.craxlor.discordbot;
 
-import com.github.craxlor.discordbot.handler.GuildPreparer;
-import com.github.craxlor.discordbot.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
 import com.github.craxlor.discordbot.module.autoroom.handler.AutoroomHandler;
+import com.github.craxlor.discordbot.module.core.handler.GuildPreparer;
+import com.github.craxlor.discordbot.module.core.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.module.music.handler.MusicVoiceConnectionHandler;
 import com.github.craxlor.discordbot.module.reddit.handler.RedditHandler;
 
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 public class Main {
     public static void main(String[] args) {
         try {
-            JDABuilder builder = JDABuilder.createDefault(Properties.get("BOT_TOKEN"));
+            JDABuilder builder = JDABuilder.createDefault(Properties.get("DEV_TOKEN"));
             builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
             builder.setChunkingFilter(ChunkingFilter.ALL);
             builder.setLargeThreshold(50);
