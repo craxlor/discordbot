@@ -1,10 +1,12 @@
-package com.github.craxlor.discordbot.handler;
+package com.github.craxlor.discordbot.module.core.handler;
 
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.Logger;
+import com.github.craxlor.discordbot.reply.LogHelper;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -30,20 +32,20 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
         if (slashCommand == null) {
             statusDetail = "unknown command";
             reply.onCommand(event, Status.ERROR, statusDetail);
-            logger.logCommand(Status.ERROR, statusDetail, getCommandName(event), member.getEffectiveName());
+            logger.warn(LogHelper.logCommand(event, Status.ERROR, statusDetail));
             return;
         }
         // check if member is allowed to use the command
         else if (slashCommand.memberHasPermission(member, event.getGuild()) == false) {
             statusDetail = "missing permission";
-            logger.logCommand(Status.FAIL, statusDetail, getCommandName(event), member.getEffectiveName());
             reply.onCommand(event, Status.FAIL, statusDetail);
+            logger.warn(LogHelper.logCommand(event, Status.FAIL, statusDetail));
             return;
         }
         // try to execute command
         try {
             reply = slashCommand.execute(event);
-            logger.logCommand(Status.SUCCESS, "successful execution", getCommandName(event), member.getEffectiveName());
+            logger.info(LogHelper.logCommand(event, Status.SUCCESS, statusDetail));
             reply.send();
         } catch (Exception e) {
             statusDetail = """
@@ -54,8 +56,8 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
                     localizied error message:
                     %s
                     """.formatted(e.getMessage(), e.getLocalizedMessage());
-            logger.logCommand(Status.ERROR, statusDetail, getCommandName(event), member.getEffectiveName());
             reply.onCommand(event, Status.ERROR, statusDetail).send();
+            logger.warn(LogHelper.logCommand(event, Status.ERROR, statusDetail));
             e.printStackTrace();
         }
     }
@@ -67,7 +69,7 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
         String sub = event.getSubcommandName();
         if (group != null)
             name += " " + group;
-        if (sub != null) 
+        if (sub != null)
             name += " " + sub;
         return name;
     }

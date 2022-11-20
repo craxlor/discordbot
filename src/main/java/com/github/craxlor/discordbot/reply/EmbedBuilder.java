@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 
 import org.json.simple.JSONObject;
 
-import com.github.craxlor.discordbot.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.module.core.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.module.music.util.YouTubeHelper;
 import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;

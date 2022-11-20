@@ -6,8 +6,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
+import org.slf4j.Logger;
+
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.Logger;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

@@ -3,6 +3,10 @@ package com.github.craxlor.discordbot.manager;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.MDC;
+
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
 import com.github.craxlor.discordbot.manager.json.GuildConfig;
 import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
@@ -21,7 +25,7 @@ import net.dv8tion.jda.api.entities.Guild;
 public class GuildManager {
     private static HashMap<Long, GuildManager> guildManagerMap = new HashMap<>();
     private static AudioPlayerManager playerManager;
-
+    private Guild guild;
     private Logger logger;
     private Commandlist commandlist;
     private GuildConfig guildConfig;
@@ -29,7 +33,8 @@ public class GuildManager {
     private GalleryTasks galleryTasks;
 
     protected GuildManager(Guild guild) {
-        logger = new Logger(com.github.craxlor.utilities.Logger.getLogger(guild.getId()), guild);
+        this.guild = guild;
+        logger = LoggerFactory.getLogger("sift");
         guildConfig = new GuildConfig(guild);
         commandlist = new Commandlist();
         commandlist.addAll(new CoreCollection());
@@ -65,6 +70,7 @@ public class GuildManager {
     }
 
     public Logger getLogger() {
+        MDC.put("filename", guild.getId());
         return logger;
     }
 

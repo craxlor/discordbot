@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.TimerTask;
-import java.util.logging.Logger;
 
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.github.craxlor.jReddit.Listings;
 import com.github.craxlor.jReddit.Reddit;
@@ -20,17 +22,19 @@ public class GalleryTask extends TimerTask {
     String subreddit;
     TextChannel messageChannel;
     Reddit reddit;
-    private static Logger logger = com.github.craxlor.utilities.Logger.getLogger("reddit");
+    private static Logger logger;
     ArrayList<RedditPost> posted;
 
     public GalleryTask(String subreddit, TextChannel messageChannel) {
         this.subreddit = subreddit;
         this.messageChannel = messageChannel;
         posted = new ArrayList<>();
+        MDC.put("filename", "reddit");
+        logger = LoggerFactory.getLogger("sift");
         try {
             reddit = new Reddit();
         } catch (ParseException | IOException e) {
-            logger.warning(e.getLocalizedMessage());
+            logger.warn(e.getLocalizedMessage());
         }
     }
 
