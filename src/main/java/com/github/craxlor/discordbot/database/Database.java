@@ -1,0 +1,262 @@
+package com.github.craxlor.discordbot.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.craxlor.discordbot.database.element.AutoroomChannel;
+import com.github.craxlor.discordbot.database.element.AutoroomTrigger;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
+
+public class Database {
+    private static Database INSTANCE;
+    public static final String URL = "jdbc:sqlite:./resources/discordBotDB.db";
+    Connection connection;
+    Logger logger;
+    PreparedStatement preparedStatement;
+
+    public static Database getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new Database();
+        return INSTANCE;
+    }
+
+    private Database() {
+        logger = LoggerFactory.getLogger("database");
+        try {
+            connection = DriverManager.getConnection(URL);
+            logger.info("connected to database");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void setupTables() throws SQLException {
+        //  SQL statement for creating a new table  
+        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT NOT NULL, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER);";
+        String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT);";
+        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER);";
+        Statement statement = connection.createStatement();
+        statement.execute(guildTable);
+        statement.execute(autoroomTriggerTable);
+        statement.execute(autoroomChannelTable);
+        statement.close();
+    }
+
+    // GuildEntries
+    public void insert(DiscordServer discordServer) {
+        String sql = "INSERT INTO guilds(guild_id, admin_id, dj_id, musicLog_id, name, modules, colorHex) VALUES(?,?,?,?,?,?,?)";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, discordServer.getGuild_id());
+            preparedStatement.setLong(2, discordServer.getAdmin_id());
+            preparedStatement.setLong(3, discordServer.getDj_id());
+            preparedStatement.setLong(4, discordServer.getMusicLog_id());
+            preparedStatement.setString(5, discordServer.getName());
+            preparedStatement.setString(6, discordServer.getModules());
+            preparedStatement.setString(7, discordServer.getColorHex());
+            preparedStatement.executeUpdate();
+            logger.info("inserted new guild: " + discordServer.getName() + " | " + discordServer.getGuild_id());
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("null")
+    public DiscordServer getDiscordServer(long guild_id) {
+        String sql = "SELECT * FROM guilds WHERE guild_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, guild_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.getLong("guild_id") != 0)
+                return new DiscordServer(
+                        resultSet.getLong("guild_id"),
+                        resultSet.getLong("admin_id"),
+                        resultSet.getLong("dj_id"),
+                        resultSet.getLong("musicLog_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("modules"),
+                        resultSet.getString("colorHex"));
+            else
+                return null;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return null;
+    }
+
+    public void update(DiscordServer discordServer) {
+        String sql = "UPDATE guilds SET admin_id = ?, dj_id = ?, musicLog_id = ?, name = ?, modules = ?, colorHex = ? WHERE guild_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, discordServer.getAdmin_id());
+            preparedStatement.setLong(2, discordServer.getDj_id());
+            preparedStatement.setLong(3, discordServer.getMusicLog_id());
+            preparedStatement.setString(4, discordServer.getName());
+            preparedStatement.setString(5, discordServer.getModules());
+            preparedStatement.setString(6, discordServer.getColorHex());
+            preparedStatement.setLong(7, discordServer.getGuild_id());
+            preparedStatement.executeUpdate();
+            logger.info("updated guild: " + discordServer.getName() + " | " + discordServer.getGuild_id());
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    // AUTOROOMCHANNEL
+    public void insert(AutoroomChannel autoroomChannel) {
+        String sql = "INSERT INTO autoroomChannels(channel_id, trigger_id) VALUES(?,?)";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, autoroomChannel.getChannel_id());
+            preparedStatement.setLong(2, autoroomChannel.getTrigger_id());
+            preparedStatement.executeUpdate();
+            logger.info("inserted new autoroomChannel");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public AutoroomChannel getAutoroomChannel(long channel_id) {
+        String sql = "SELECT * FROM autoroomChannels WHERE channel_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, channel_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.getLong("channel_id") != 0)
+                return new AutoroomChannel(
+                        resultSet.getLong("channel_id"),
+                        resultSet.getLong("trigger_id"));
+            else
+                return null;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<AutoroomChannel> getAutoroomChannels(long guild_id) {
+        String sql = "SELECT * FROM autoroomChannels WHERE trigger_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, guild_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<AutoroomChannel> list = new ArrayList<>();
+            while (resultSet.next()) {
+                list.add(new AutoroomChannel(
+                        resultSet.getLong("channel_id"),
+                        resultSet.getLong("trigger_id")));
+            }
+            return list;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public void update(AutoroomChannel autoroomChannel) {
+        String sql = "UPDATE autoroomChannels SET trigger_id = ? WHERE channel_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, autoroomChannel.getTrigger_id());
+            preparedStatement.setLong(2, autoroomChannel.getChannel_id());
+            preparedStatement.executeUpdate();
+            logger.info("updated guild");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void removeAutoroomChannel(long channel_id) {
+        String sql = "DELETE FROM autoroomChannels WHERE channel_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, channel_id);
+            preparedStatement.executeUpdate();
+            logger.info("deleted an autoroomChannel");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    // AUTOROOMTRIGGER
+    public void insert(AutoroomTrigger autoroomTrigger) {
+        String sql = "INSERT INTO autoroomTriggers(trigger_id, category_id, naming_pattern, inheritance) VALUES(?,?,?,?)";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, autoroomTrigger.getTrigger_id());
+            preparedStatement.setLong(2, autoroomTrigger.getCategory_id());
+            preparedStatement.setString(3, autoroomTrigger.getNaming_pattern());
+            preparedStatement.setString(4, autoroomTrigger.getInheritance());
+            preparedStatement.executeUpdate();
+            logger.info("inserted new autoroomTrigger");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public AutoroomTrigger getAutoroomTrigger(long trigger_id) {
+        String sql = "SELECT * FROM autoroomTriggers WHERE trigger_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, trigger_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.getLong("trigger_id") != 0)
+                return new AutoroomTrigger(
+                        resultSet.getLong("trigger_id"),
+                        resultSet.getLong("category_id"),
+                        resultSet.getString("naming_pattern"),
+                        resultSet.getString("inheritance"));
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return null;
+    }
+
+    public void update(AutoroomTrigger autoroomTrigger) {
+        String sql = "UPDATE autoroomTriggers SET category_id = ?, naming_pattern = ?, inheritance = ? WHERE trigger_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, autoroomTrigger.getCategory_id());
+            preparedStatement.setString(2, autoroomTrigger.getNaming_pattern());
+            preparedStatement.setString(3, autoroomTrigger.getInheritance());
+            preparedStatement.setLong(4, autoroomTrigger.getTrigger_id());
+            preparedStatement.executeUpdate();
+            logger.info("updated guild");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void removeAutoroomTrigger(long trigger_id) {
+        String sql = "DELETE FROM autoroomTriggers WHERE trigger_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, trigger_id);
+            preparedStatement.executeUpdate();
+            logger.info("deleted an autoroomTrigger");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void closeConnection() {
+        try {
+            preparedStatement.close();
+            connection.close();
+            INSTANCE = null;
+            logger.info("closed connection to database");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+}

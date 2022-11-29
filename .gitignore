@@ -2,8 +2,7 @@
 .vscode
 bin
 build
-resources/guildconfigs
-resources/logs
-resources/youtubestorage.json
-src/main/java/com/github/craxlor/discordbot/Secrets.java
 *.properties
+*.db
+*.log
+*.json

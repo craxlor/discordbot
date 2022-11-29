@@ -10,10 +10,10 @@ import com.github.craxlor.discordbot.command.slash.SlashCommand;
 import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
 import com.github.craxlor.discordbot.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.module.music.command.MusicCollection;
-import com.github.craxlor.discordbot.module.reddit.command.RedditCollection;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
+//TODO adapt commandlist to database
 public class Commandlist extends ArrayList<SlashCommand> {
 
     @Nonnull
@@ -72,7 +72,6 @@ public class Commandlist extends ArrayList<SlashCommand> {
         commandlist.addAll(new CoreCollection());
         commandlist.addAll(new AutoroomCollection());
         commandlist.addAll(new MusicCollection());
-        commandlist.addAll(new RedditCollection());
         Commandlist result = new Commandlist();
         for (SlashCommand command : commandlist) {
             if (command.isGuildOnly() == false)

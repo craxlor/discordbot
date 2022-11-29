@@ -3,6 +3,7 @@ package com.github.craxlor.discordbot.module.music.command;
 import org.slf4j.Logger;
 
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
+import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.module.music.command.slash.Play;
 
@@ -21,7 +22,10 @@ public abstract class SCMusic extends SlashCommand {
     @SuppressWarnings("null")
     @Override
     public boolean memberHasPermission(Member member, Guild guild) {
-        Role dj = GuildManager.getGuildManager(guild).getGuildConfig().getDJRole();
+        Database database = Database.getInstance();
+        Long dj_id = database.getDiscordServer(guild.getIdLong()).getDj_id();
+        
+        Role dj = guild.getRoleById(dj_id);
         Logger logger = GuildManager.getGuildManager(guild).getLogger();
         String errorTitle = "";
         String errorMessage = "";

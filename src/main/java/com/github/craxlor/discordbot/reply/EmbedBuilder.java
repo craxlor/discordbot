@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import org.json.simple.JSONObject;
 
-import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.module.core.handler.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.module.music.util.YouTubeHelper;
 import com.github.craxlor.jReddit.RedditPost;
@@ -106,8 +106,13 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
     }
 
     private EmbedBuilder setColor(Guild guild) {
-        Color color = GuildManager.getGuildManager(guild).getGuildConfig().getEmbedColor();
-        if (color == null) {
+        Color color;
+        Database database = Database.getInstance();
+        String hex = database.getDiscordServer(guild.getIdLong()).getColorHex();
+
+        if (hex != null) {
+            color = Color.decode(hex);
+        } else {
             Random random = new Random();
             color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
         }

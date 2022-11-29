@@ -5,9 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.Properties;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
-
+import com.github.craxlor.discordbot.database.Database;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -22,16 +20,16 @@ public abstract class SCAdmin extends SlashCommand {
 
     @Override
     public boolean memberHasPermission(@Nonnull Member member, @Nonnull Guild guild) {
-        GuildConfig config = (GuildConfig) GuildManager.getGuildManager(guild).getGuildConfig();
         // check if member is developer
         if (member.getIdLong() == Long.parseLong(Properties.get("DEVELOPER_ID"))) {
             return true;
         }
         // check if member is an admin
-        Role admin = config.getAdminRole();
+        Database database = Database.getInstance();
+        Long adminId = database.getDiscordServer(guild.getIdLong()).getAdmin_id();
         List<Role> memberRoles = member.getRoles();
         for (Role role : memberRoles) {
-            if (admin.getIdLong() == role.getIdLong()) {
+            if (adminId == role.getIdLong()) {
                 return true;
             }
         }

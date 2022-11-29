@@ -1,15 +1,13 @@
 package com.github.craxlor.discordbot.module.autoroom.handler;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.AutoroomChannel;
+import com.github.craxlor.discordbot.database.element.AutoroomTrigger;
 import com.github.craxlor.discordbot.module.autoroom.command.slash.Setup;
-import com.github.craxlor.discordbot.reply.LogHelper;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,105 +23,82 @@ public class AutoroomHandler extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
-        Guild guild = event.getGuild();
-        GuildManager guildManager = GuildManager.getGuildManager(guild);
-        GuildConfig config = guildManager.getGuildConfig();
         Member member = event.getMember();
         VoiceChannel voiceChannel;
+        Database database = Database.getInstance();
         /**
          * create a dynamic voice channel whenever a member moves or joins in a
          * specified voice channel
          */
         if ((voiceChannel = (VoiceChannel) event.getChannelJoined()) != null) {
-            if (config.getAutoroomTrigger(voiceChannel.getIdLong()) != null)
-                joinedAutoroomTrigger(guild, guildManager, voiceChannel, member);
+            AutoroomTrigger autoroomTrigger;
+            if ((autoroomTrigger = database.getAutoroomTrigger(voiceChannel.getIdLong())) != null)
+                createAutoroomChannel(database, autoroomTrigger, member);
         }
         // delete dynamic voice channel if it is empty
         if ((voiceChannel = (VoiceChannel) event.getChannelLeft()) != null) {
-            if (config.isAutoroom(voiceChannel.getIdLong()))
-                leftAutoroom(guild, guildManager, voiceChannel, member);
+            if (database.getAutoroomChannel(voiceChannel.getIdLong()) != null)
+                leaveAutoroomChannel(database, voiceChannel);
         }
+
     }
 
     @Override
     public void onChannelDelete(@Nonnull ChannelDeleteEvent event) {
-        GuildManager guildManager = GuildManager.getGuildManager(event.getGuild());
-        GuildConfig config = guildManager.getGuildConfig();
         long channelID = event.getChannel().getIdLong();
-        String channelName = event.getChannel().getName();
-        Logger logger = GuildManager.getGuildManager(event.getGuild()).getLogger();
-        if (config.isAutoroomTrigger(channelID)) {
-            config.removeAutoroomTrigger(channelID);
-            logger.info(LogHelper.logAutoroom(event.getGuild().getName(), channelName,
-                    "an autoroom channel was manually deleted", "Trigger"));
-        }
-        if (config.isAutoroom(channelID)) {
-            config.removeAutoroom(channelID);
-            logger.info(LogHelper.logAutoroom(event.getGuild().getName(), channelName,
-                    "an autoroom channel was manually deleted", "Autoroom"));
-        }
+        Database database = Database.getInstance();
+        if (database.getAutoroomTrigger(channelID) != null)
+            database.removeAutoroomTrigger(channelID);
+        if (database.getAutoroomChannel(channelID) != null)
+            database.removeAutoroomChannel(channelID);
+
     }
 
     @Override
     @SuppressWarnings("null")
     public void onGuildReady(@Nonnull GuildReadyEvent event) {
         Guild guild = event.getGuild();
-        GuildManager guildManager = GuildManager.getGuildManager(guild);
-        GuildConfig config = guildManager.getGuildConfig();
         long autoroomID;
         VoiceChannel autoroom;
-        JSONArray autoroomArray = config.getAutorooms();
-        if (autoroomArray == null || autoroomArray.isEmpty() || autoroomArray.size() < 1)
+        Database database = Database.getInstance();
+        List<AutoroomChannel> autoroomChannels = database.getAutoroomChannels(guild.getIdLong());
+        if (autoroomChannels == null || autoroomChannels.isEmpty() || autoroomChannels.size() < 1)
             return;
 
-        for (Object o : autoroomArray) {
-            autoroomID = (long) ((JSONObject) o).get("channel-id");
+        for (AutoroomChannel autoroomChannel : autoroomChannels) {
+            autoroomID = autoroomChannel.getChannel_id();
             autoroom = guild.getVoiceChannelById(autoroomID);
             if (autoroom.getMembers().size() < 1) {
                 autoroom.delete().queue();
-                config.removeAutoroom(autoroomID);
+                database.removeAutoroomChannel(autoroomID);
             }
         }
+
     }
 
     @SuppressWarnings("null")
-    private void joinedAutoroomTrigger(Guild guild, GuildManager guildManager, VoiceChannel autoroomTrigger,
-            Member member) {
-        GuildConfig config = guildManager.getGuildConfig();
-        Logger logger = guildManager.getLogger();
-        long autoroomTriggerID = autoroomTrigger.getIdLong();
-        JSONObject autoroomTriggerJSON = config.getAutoroomTrigger(autoroomTriggerID);
-
-        Category category = guild.getCategoryById((long) autoroomTriggerJSON.get("category-id"));
-        String name = (String) autoroomTriggerJSON.get("name");
+    private void createAutoroomChannel(Database database, AutoroomTrigger autoroomTrigger, Member member) {
+        String name = autoroomTrigger.getNaming_pattern();
         // parse name
         if (name.contains("number")) {
-            // count all autorooms created through this autoroomTrigger
-            JSONArray autoroomsJSON = config.getAutorooms();
-            if (autoroomsJSON != null) {
-                int number = 0;
-                JSONObject autoroomJSON;
-                for (Object object : autoroomsJSON) {
-                    autoroomJSON = (JSONObject) object;
-                    if ((long) autoroomJSON.get("trigger-id") == autoroomTriggerID) {
-                        number++;
-                    }
-                }
-                name = name.replace("number", Integer.toString(number + 1));
-            }
+            List<AutoroomChannel> autoroomChannels = database.getAutoroomChannels(autoroomTrigger.getTrigger_id());
+            name = name.replace("number", Integer.toString(autoroomChannels.size()));
         }
         if (name.contains("username")) {
             // use username as dynamicName
             name = name.replace("username", member.getEffectiveName());
         }
+        Guild guild = member.getGuild();
+        Category category = guild.getCategoryById(autoroomTrigger.getCategory_id());
+        VoiceChannel autoroomTriggerVC = guild.getVoiceChannelById(autoroomTrigger.getTrigger_id());
         // create new voicechannel
         VoiceChannel autoroom = null;
-        if (autoroomTriggerJSON.get("parent") == null)
+        if (autoroomTrigger.getInheritance() == null) {
             autoroom = guild.createVoiceChannel(name, category).complete();
-        else {
-            switch ((String) autoroomTriggerJSON.get("parent")) {
+        } else {
+            switch (autoroomTrigger.getInheritance()) {
                 case Setup.CHOICE_TRIGGER -> {
-                    autoroom = guild.createCopyOfChannel(autoroomTrigger).setName(name).complete();
+                    autoroom = guild.createCopyOfChannel(autoroomTriggerVC).setName(name).complete();
                     autoroom.getManager().setParent(category).queue();
                 }
                 case Setup.CHOICE_CATEGORY -> {
@@ -131,27 +106,21 @@ public class AutoroomHandler extends ListenerAdapter {
                 }
             }
         }
+        // channel author is allowed to customize the channel
         autoroom.upsertPermissionOverride(member).setAllowed(Permission.MANAGE_CHANNEL).queue();
         // inherit user limit from trigger channel
-        autoroom.getManager().setUserLimit(autoroomTrigger.getUserLimit()).queue();
+        autoroom.getManager().setUserLimit(autoroomTriggerVC.getUserLimit()).queue();
         // move member to new voiceChannel
         guild.moveVoiceMember(member, autoroom).queue();
-        // add created voiceChannel to config
-        config.addAutoroom(autoroom.getIdLong(), autoroomTrigger.getIdLong());
-        logger.info(LogHelper.logAutoroom(guild.getName(), autoroom.getName(),
-                "an autoroom channel was created automatically", "Autoroom"));
+        // add created voiceChannel to database
+        AutoroomChannel autoroomChannel = new AutoroomChannel(autoroom.getIdLong(), autoroomTrigger.getTrigger_id());
+        database.insert(autoroomChannel);
     }
 
-    private void leftAutoroom(Guild guild, GuildManager guildManager, VoiceChannel autoroom, Member member) {
-        GuildConfig config = guildManager.getGuildConfig();
-        Logger logger = guildManager.getLogger();
-        // delete dynamic voice channel if it is empty
-        if (autoroom.getMembers().size() < 1) {
-            config.removeAutoroom(autoroom.getIdLong());
-            autoroom.delete().queue();
-            logger.info(LogHelper.logAutoroom(guild.getName(), autoroom.getName(),
-                    "an autoroom channel was deleted automatically", "Autoroom"));
+    private void leaveAutoroomChannel(Database database, VoiceChannel autoroomChannelVC) {
+        if (autoroomChannelVC.getMembers().size() < 1) {
+            database.removeAutoroomChannel(autoroomChannelVC.getIdLong());
+            autoroomChannelVC.delete().queue();
         }
-
     }
 }

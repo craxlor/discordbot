@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.github.craxlor.utilities.JSONFile;
 
+// TODO adapt youTubeStorage to database
 public class YouTubeStorage extends JSONFile {
 
     private static YouTubeStorage INSTANCE;

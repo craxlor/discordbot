@@ -1,11 +1,10 @@
 package com.github.craxlor.discordbot.module.core.command.slash;
 
-import java.awt.Color;
-
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
-import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -72,33 +71,32 @@ public class EmbedColor extends SCAdmin {
 		String subcommandName = event.getSubcommandName();
 		String subcommandGroup = event.getSubcommandGroup();
 		String statusDetail = "";
+		Database database = Database.getInstance();
+		DiscordServer discordServer = database.getDiscordServer(event.getGuild().getIdLong());
 		if (subcommandGroup != null && subcommandGroup.equals(SET_NAME)) {
 			int red = 0, green = 0, blue = 0;
-			Color color;
+			String hex = null;
 			// RGB
 			switch (subcommandName) {
 				case RGB_NAME -> {
 					red = event.getOption(RGB_OPT_RED_NAME).getAsInt();
 					green = event.getOption(RGB_OPT_GREEN_NAME).getAsInt();
 					blue = event.getOption(RGB_OPT_BLUE_NAME).getAsInt();
+					hex = String.format("#%02x%02x%02x", red, green, blue);
 				}
 				case HEX_NAME -> {
-					String hex = event.getOption(HEX_OPT_NAME).getAsString();
-					color = Color.decode(hex);
-					red = color.getRed();
-					green = color.getGreen();
-					blue = color.getBlue();
+					hex = event.getOption(HEX_OPT_NAME).getAsString();
 				}
 			}
-			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().setEmbedColor(red, green, blue);
-			color = new Color(red, green, blue);
-			statusDetail = "The color for embedded messages has been set to #"
-					+ Integer.toHexString(color.getRGB()).substring(2) + ".";
+
+			discordServer.setColorHex(hex);
+			statusDetail = "The color for embedded messages has been set to " + hex + ".";
 		}
 		if (subcommandName.equals(REMOVE_NAME)) {
-			GuildManager.getGuildManager(event.getGuild()).getGuildConfig().removeEmbedColor();
+			discordServer.setColorHex(null);
 			statusDetail = "The color for embedded messages will be random now.";
 		}
+		database.update(discordServer);
 		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
 	}
 
