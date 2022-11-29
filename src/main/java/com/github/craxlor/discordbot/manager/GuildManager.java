@@ -1,21 +1,18 @@
 package com.github.craxlor.discordbot.manager;
 
 import java.util.HashMap;
-import java.util.List;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
 import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
 import com.github.craxlor.discordbot.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.module.core.command.slash.Module;
 import com.github.craxlor.discordbot.module.music.command.MusicCollection;
 import com.github.craxlor.discordbot.module.music.manager.MusicManager;
-import com.github.craxlor.discordbot.module.reddit.command.RedditCollection;
-import com.github.craxlor.discordbot.module.reddit.manager.GalleryTasks;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -28,27 +25,35 @@ public class GuildManager {
     private Guild guild;
     private Logger logger;
     private Commandlist commandlist;
-    private GuildConfig guildConfig;
     private MusicManager musicManager;
-    private GalleryTasks galleryTasks;
 
     protected GuildManager(Guild guild) {
         this.guild = guild;
         logger = LoggerFactory.getLogger("sift");
-        guildConfig = new GuildConfig(guild);
         commandlist = new Commandlist();
         commandlist.addAll(new CoreCollection());
-        List<String> modules = guildConfig.getModules();
-        for (String module : modules) {
-            switch (module) {
-                case Module.OPT_AUTOROOM_NAME -> commandlist.addAll(new AutoroomCollection());
-                case Module.OPT_MUSIC_NAME -> commandlist.addAll(new MusicCollection());
-                case Module.OPT_REDDIT_NAME -> commandlist.addAll(new RedditCollection());
+        Database database = Database.getInstance();
+        String modules = database.getDiscordServer(guild.getIdLong()).getModules();
+        if (modules != null) {
+            if (modules.contains(",")) { // multiple modules
+                for (String module : modules.split(",")) {
+                    switch (module) {
+                        case Module.OPT_AUTOROOM_NAME -> commandlist.addAll(new AutoroomCollection());
+                        case Module.OPT_MUSIC_NAME -> commandlist.addAll(new MusicCollection());
+                    }
+                }
+            } else { // only one module
+                switch (modules) {
+                    case Module.OPT_AUTOROOM_NAME -> {
+                        commandlist.addAll(new AutoroomCollection());
+                        System.out.println("added autoroom commands");
+                    }
+                    case Module.OPT_MUSIC_NAME -> commandlist.addAll(new MusicCollection());
+                }
             }
         }
         musicManager = new MusicManager(getAudioPlayerManager());
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
-        galleryTasks = new GalleryTasks(guild);
     }
 
     public static GuildManager getGuildManager(Guild guild) {
@@ -78,15 +83,7 @@ public class GuildManager {
         return commandlist;
     }
 
-    public GuildConfig getGuildConfig() {
-        return guildConfig;
-    }
-
     public MusicManager getMusicManager() {
         return musicManager;
-    }
-
-    public GalleryTasks getGalleryTasks() {
-        return galleryTasks;
     }
 }

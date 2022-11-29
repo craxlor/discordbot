@@ -3,8 +3,8 @@ package com.github.craxlor.discordbot.module.core.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -47,21 +47,28 @@ public class Role extends SCAdmin {
 	@Override
 	@SuppressWarnings("null")
 	public Reply execute(@Nonnull SlashCommandInteractionEvent event) {
-		GuildConfig config = (GuildConfig) GuildManager.getGuildManager(event.getGuild()).getGuildConfig();
 		String subcommandName = event.getSubcommandName();
 		String msg = "";
+		Status status = Status.ERROR;
 		net.dv8tion.jda.api.entities.Role role = event.getOption(OPT_NAME).getAsRole();
+		Database database = Database.getInstance();
+		DiscordServer discordServer = database.getDiscordServer(event.getGuild().getIdLong());
 		switch (subcommandName) {
 			case ADMIN_NAME -> {
-				config.setAdminRole(role.getIdLong());
+				discordServer.setAdmin_id(role.getIdLong());
 				msg = role.getAsMention() + " has been set as Admin role.";
+				status = Status.SUCCESS;
 			}
 			case DJ_NAME -> {
-				config.setDJRole(role.getIdLong());
+				discordServer.setDj_id(role.getIdLong());
 				msg = role.getAsMention() + " has been set as DJ role.";
+				status = Status.SUCCESS;
 			}
 		}
-		return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, msg);
+		database.update(discordServer);
+		
+
+		return new Reply(event.deferReply(), false).onCommand(event, status, msg);
 	}
 
 	@Override

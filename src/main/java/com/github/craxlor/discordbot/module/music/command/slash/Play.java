@@ -45,7 +45,7 @@ public class Play extends SCMusic {
     private String commandAction = null;
     private AudioTrackInfo trackInfo = null;
     private Status status = Status.ERROR;
-    private String input = null;
+    private String parameter = null;
 
     public Play() {
         SubcommandData queue = new SubcommandData(QUEUE_NAME, QUEUE_DESCRIPTION);
@@ -73,7 +73,7 @@ public class Play extends SCMusic {
     @Override
     @SuppressWarnings("null")
     public Reply execute(@Nonnull SlashCommandInteractionEvent event) throws Exception {
-        input = event.getOption(OPT_NAME).getAsString();
+        parameter = event.getOption(OPT_NAME).getAsString();
         Member member = event.getMember();
         String subcommandName = event.getSubcommandName();
         Guild guild = event.getGuild();
@@ -91,46 +91,39 @@ public class Play extends SCMusic {
 
         YouTubeStorage youTubeStorage = YouTubeStorage.getInstance();
         JSONObject videoInformation = null;
-        if (input.contains("http") == false && input.contains("www.") == false) {
+        if (parameter.contains("http") == false && parameter.contains("www.") == false) {
             // assume that input is not containing an url but a searchTerm to look up
-            videoInformation = YouTubeHelper.findVideo(input);
-            input = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
+            videoInformation = YouTubeHelper.findVideo(parameter);
+            parameter = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
         }
         // check if the YT-Video is known in YouTubeStorage
-        else if (input.contains("youtube.com/watch?v=")) {
+        else if (parameter.contains("youtube.com/watch?v=")) {
             String videoId;
             // get videoId
-            if (input.contains("&list"))
-                videoId = input.substring(input.lastIndexOf("?v=") + 3, input.indexOf("&list"));
+            if (parameter.contains("&list"))
+                videoId = parameter.substring(parameter.lastIndexOf("?v=") + 3, parameter.indexOf("&list"));
             else
-                videoId = input.substring(input.lastIndexOf("?v=") + 3, input.length());
+                videoId = parameter.substring(parameter.lastIndexOf("?v=") + 3, parameter.length());
             // retrieve YouTubeStorage entry to provide more information in command-reply
             if (youTubeStorage.containsVideoId(videoId)) {
                 videoInformation = youTubeStorage.getByVideoId(videoId);
             }
         }
         // check if provided url is from spotify
-        else if (input.contains("open.spotify")) {
-            if (input.contains("track") == false)
+        else if (parameter.contains("open.spotify")) {
+            if (parameter.contains("track") == false)
                 return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
                         "I just support spotify **tracks**!");
-            String searchTerm = convertSpotifyUrlToSearchTerm(input);
+            String searchTerm = convertSpotifyUrlToSearchTerm(parameter);
             videoInformation = YouTubeHelper.findVideo(searchTerm);
-            input = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
+            parameter = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
         }
-
-        /**
-         * input should contain a viable url in any case by now
-         * TODO
-         * build a new onMusic reply which can display additional information from
-         * videoInformation JSONObject
-         */
 
         if (videoInformation != null && videoInformation.get("error") != null)
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
                     "The daily quota limit has been reached. Therfore I cannot do this action!");
 
-        GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, input, new AudioLoadResultHandler() {
+        GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, parameter, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 connectTo(member);
@@ -165,7 +158,7 @@ public class Play extends SCMusic {
                     case NEXT_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, true);
                     case NOW_NAME -> musicManager.scheduler.addOnTopOfQueue(tracks, false);
                 }
-                commandAction = "added playlist " + "[" + playlist.getName() + "](" + input + ")" + " to queue";
+                commandAction = "added playlist " + "[" + playlist.getName() + "](" + parameter + ")" + " to queue";
                 status = Status.SUCCESS;
             }
 

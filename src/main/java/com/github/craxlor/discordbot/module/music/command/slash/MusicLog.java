@@ -3,8 +3,8 @@ package com.github.craxlor.discordbot.module.music.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -53,21 +53,22 @@ public class MusicLog extends SCAdmin {
     public Reply execute(SlashCommandInteractionEvent event) throws Exception {
         String subcommandName = event.getSubcommandName();
         String msg = "";
-        GuildConfig config = GuildManager.getGuildManager(event.getGuild()).getGuildConfig();
         Status status = Status.ERROR;
+        Database database = Database.getInstance();
+        DiscordServer discordServer = database.getDiscordServer(event.getGuild().getIdLong());
         switch (subcommandName) {
             case SET_NAME -> {
                 // set music channel id in config
                 TextChannel tc = event.getOption(SET_OPT_NAME).getAsChannel()
                         .asTextChannel();
-                config.setMusicLog(tc.getIdLong());
+                discordServer.setMusicLog_id(tc.getIdLong());
                 msg = "The music log has been set to " + tc.getAsMention() + ".";
                 status = Status.SUCCESS;
             }
             case REMOVE_NAME -> {
-                long id = config.getMusicLog();
-                if (id != -1) {
-                    config.removeMusicLog();
+                long id = discordServer.getMusicLog_id();
+                if (discordServer.getMusicLog_id() > 0) {
+                    discordServer.setMusicLog_id(-1);
                     OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
                     if (optionMapping != null && optionMapping.getAsBoolean())
                         event.getGuild().getTextChannelById(id).delete().queue();
@@ -79,6 +80,8 @@ public class MusicLog extends SCAdmin {
                 }
             }
         }
+        database.update(discordServer);
+
         return new Reply(event.deferReply(), false).onMusic(event, status, msg);
     }
 

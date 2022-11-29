@@ -94,7 +94,7 @@ public class YouTubeHelper {
                 }
                 // break if more than half of the searchTermParts have been found in the
                 // videoTitle
-                if (searchTermPartMatches >= searchTerm.split(" ").length / 2)
+                if (searchTermPartMatches >= searchTerm.split(" ").length / 2f)
                     break;
             }
             youTubeStorage.add(entry);

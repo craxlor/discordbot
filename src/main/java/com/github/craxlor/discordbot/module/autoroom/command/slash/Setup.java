@@ -3,12 +3,11 @@ package com.github.craxlor.discordbot.module.autoroom.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.AutoroomTrigger;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -93,9 +92,7 @@ public class Setup extends SCAdmin {
 	public Reply execute(SlashCommandInteractionEvent event) throws Exception {
 		String subcommandName = event.getSubcommandName();
 		String statusDetail = "";
-		Guild guild = event.getGuild();
-		GuildManager guildManager = GuildManager.getGuildManager(guild);
-		GuildConfig config = guildManager.getGuildConfig();
+		Database database = Database.getInstance();
 		Reply reply = new Reply(event.deferReply(), false);
 		switch (subcommandName) {
 			case CREATE_NAME -> {
@@ -104,13 +101,17 @@ public class Setup extends SCAdmin {
 					VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME)
 							.getAsChannel().asVoiceChannel();
 					// prevent double bindings
-					if (config.isAutoroomTrigger(trigger.getIdLong()))
+					if (database.getAutoroomTrigger(trigger.getIdLong()) != null)
 						return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
 								"The selceted channel is already an autoroom trigger!");
 					Category category = event.getOption(OPT_CATEGORY_NAME)
 							.getAsChannel().asCategory();
 					String parent = event.getOption(OPT_PARENT_NAME).getAsString();
-					config.addAutoroomTrigger(name, trigger.getIdLong(), category.getIdLong(), parent);
+
+					AutoroomTrigger autoroomTrigger = new AutoroomTrigger(trigger.getIdLong(), category.getIdLong(), name, parent);
+					System.out.println("insert new autoRoomTrigger");
+					database.insert(autoroomTrigger);
+
 					statusDetail = """
 							Set %s as an autoroom trigger.
 							The Autorooms will be named: %s.""".formatted(trigger.getAsMention(), name);
@@ -123,7 +124,7 @@ public class Setup extends SCAdmin {
 			case EDIT_NAME -> {
 				VoiceChannel trigger = event.getOption(OPT_TRIGGER_NAME).getAsChannel().asVoiceChannel();
 				// check if the provided channel is a trigger
-				if (config.isAutoroomTrigger(trigger.getIdLong()) == false)
+				if (database.getAutoroomTrigger(trigger.getIdLong()) == null)
 					return reply.onCommand(event, Status.FAIL,
 							"The selected channel is not an autoroom trigger!");
 				OptionMapping option = event.getOption(OPT_NAME_NAME);
@@ -156,15 +157,21 @@ public class Setup extends SCAdmin {
 					statusDetail += """
 
 							Changed the **Parent object** that determines the permissions\nfor the trigger channel to **%s**.
-								""".formatted(parent);
+								"""
+							.formatted(parent);
 				}
 				// apply changes
-				config.editAutoroomtrigger(trigger.getIdLong(), name, categoryID, parent);
+				AutoroomTrigger autoroomTrigger = database.getAutoroomTrigger(trigger.getIdLong());
+				autoroomTrigger.setNaming_pattern(name);
+				autoroomTrigger.setCategory_id(categoryID);
+				autoroomTrigger.setInheritance(parent);
+				database.update(autoroomTrigger);
 				return reply.onCommand(event, Status.SUCCESS, statusDetail);
 			}
 			case REMOVE_NAME -> {
 				VoiceChannel trigger = event.getOption(REMOVE_OPT_CHANNEL_NAME).getAsChannel().asVoiceChannel();
-				if (config.removeAutoroomTrigger(trigger.getIdLong())) {
+				if (database.getAutoroomTrigger(trigger.getIdLong()) != null) {
+					database.removeAutoroomTrigger(trigger.getIdLong());
 					statusDetail = "removed " + trigger.getAsMention();
 					OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
 					if (optionMapping != null && optionMapping.getAsBoolean())
@@ -175,6 +182,7 @@ public class Setup extends SCAdmin {
 							"Could not identify " + trigger.getAsMention() + " as an autoroom trigger!");
 			}
 		}
+		
 		return reply.onCommand(event, Status.ERROR,
 				"Fatal error!\nPlease contact the developer immediately.\nDiscord Tag: Arty#1006");
 	}

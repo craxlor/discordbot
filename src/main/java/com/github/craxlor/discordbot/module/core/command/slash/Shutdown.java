@@ -3,6 +3,7 @@ package com.github.craxlor.discordbot.module.core.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCDev;
+import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.reply.LogHelper;
 import com.github.craxlor.discordbot.reply.Reply;
@@ -28,6 +29,7 @@ public class Shutdown extends SCDev {
     @SuppressWarnings("null")
     public Reply execute(SlashCommandInteractionEvent event) throws Exception {
         new Reply(event.deferReply(), true).onCommand(event, Status.SUCCESS, "The Bot is going offline!").send();
+        Database.getInstance().closeConnection();
         GuildManager.getGuildManager(event.getGuild()).getLogger().info(
                 LogHelper.logCommand(event, Status.SUCCESS, "successful execution"));
         Thread.sleep(1000);

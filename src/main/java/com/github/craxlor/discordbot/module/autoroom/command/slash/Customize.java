@@ -6,8 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
+import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -121,9 +120,12 @@ public class Customize extends SlashCommand {
         VoiceChannel vc = (VoiceChannel) voiceState.getChannel();
         if (vc == null)
             return false;
-        GuildConfig config = GuildManager.getGuildManager(guild).getGuildConfig();
-        if (config.isAutoroom(vc.getIdLong()))
+        Database database = Database.getInstance();
+        if (database.getAutoroomChannel(vc.getIdLong()) != null) {
+            
             return true;
+        }
+        
         return false;
 
     }

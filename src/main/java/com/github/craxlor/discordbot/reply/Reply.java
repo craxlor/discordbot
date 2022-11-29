@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import org.json.simple.JSONObject;
 
-import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.database.Database;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -55,8 +55,9 @@ public class Reply {
         messageEmbed = embedBuilder.build(event.getMember());
         // send reply message in music log channel
         Guild guild = event.getGuild();
-        long id = GuildManager.getGuildManager(guild).getGuildConfig().getMusicLog();
-        if (id != -1)
+        Database database = Database.getInstance();
+        long id = database.getDiscordServer(guild.getIdLong()).getMusicLog_id();
+        if (id > 0)
             guild.getTextChannelById(id).sendMessageEmbeds(messageEmbed).queue();
         return this;
     }

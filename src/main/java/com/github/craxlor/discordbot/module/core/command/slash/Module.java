@@ -3,12 +3,12 @@ package com.github.craxlor.discordbot.module.core.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
 import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
 import com.github.craxlor.discordbot.module.music.command.MusicCollection;
-import com.github.craxlor.discordbot.module.reddit.command.RedditCollection;
 import com.github.craxlor.discordbot.reply.Reply;
 import com.github.craxlor.discordbot.reply.Status;
 
@@ -64,25 +64,51 @@ public class Module extends SCAdmin {
         String subcommandName = event.getSubcommandName();
         String statusDetail = "";
         Guild guild = event.getGuild();
-        GuildConfig config = GuildManager.getGuildManager(guild).getGuildConfig();
         Commandlist commandlist = GuildManager.getGuildManager(guild).getCommandlist();
         String module = event.getOption(OPT_NAME).getAsString();
+        Database database = Database.getInstance();
+        DiscordServer discordServer = database.getDiscordServer(event.getGuild().getIdLong());
+        String modules = discordServer.getModules();
         switch (subcommandName) {
             case ADD_NAME -> {
-                config.addModule(module);
+                if (modules == null)
+                    discordServer.setModules(module);
+                else
+                    discordServer.setModules(modules + "," + module);
                 add(module, commandlist);
                 statusDetail = "Added the module: **" + module + "**";
             }
             case REMOVE_NAME -> {
-                config.removeModule(module);
+                if (modules.contains(module)) {
+                    if (modules.contains(",")) { // contains multiple modules
+                        String[] mArray = modules.split(",");
+                        modules = "";
+                        for (int i = 0; i < mArray.length; i++) {
+                            if (mArray[i].equalsIgnoreCase(module)) // skip module that shall be removed
+                                continue;
+                            // add , after each module except the last
+                            if (i + 1 < mArray.length)
+                                modules += mArray[i] + ",";
+                            else
+                                modules += mArray[i];
+                        }
+                    } else { // contains only one module
+                        modules = null;
+                    }
+                    discordServer.setModules(modules);
+                }
                 remove(module, commandlist);
                 statusDetail = "Removed the module: **" + module + "**";
             }
         }
+        database.update(discordServer);
+        
+
         statusDetail += "\nUpdating commands will take a while. Be patient. (:";
         // update commandlist
         guild.updateCommands().queue();
         guild.updateCommands().addCommands(commandlist.getGuildOnlyCommandsData()).queue();
+        System.out.println(statusDetail);
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
     }
 
@@ -90,7 +116,6 @@ public class Module extends SCAdmin {
         switch (module) {
             case "autoroom" -> commandlist.addAll(new AutoroomCollection());
             case "music" -> commandlist.addAll(new MusicCollection());
-            case "reddit" -> commandlist.addAll(new RedditCollection());
         }
     }
 
@@ -98,7 +123,6 @@ public class Module extends SCAdmin {
         switch (module) {
             case "autoroom" -> commandlist.removeAll(new AutoroomCollection());
             case "music" -> commandlist.removeAll(new MusicCollection());
-            case "reddit" -> commandlist.removeAll(new RedditCollection());
         }
     }
 

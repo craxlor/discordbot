@@ -2,8 +2,9 @@ package com.github.craxlor.discordbot.module.core.handler;
 
 import javax.annotation.Nonnull;
 
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.DiscordServer;
 import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.json.GuildConfig;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -16,13 +17,16 @@ public class GuildPreparer extends ListenerAdapter {
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {
         // setup a GuildManager with its necessary components
         Guild guild = event.getGuild();
+
+        Database database = Database.getInstance();
+        DiscordServer discordServer = new DiscordServer(guild.getIdLong(), guild.getName());
+        database.insert(discordServer);
+        
+
         GuildManager guildManager = GuildManager.getGuildManager(guild);
         guildManager.getLogger().info("""
                 joined a guild
                     Guild: %s
                     Owner: %s""".formatted(guild.getName(), guild.getOwner().getEffectiveName()));
-        // config
-        GuildConfig config = (GuildConfig) guildManager.getGuildConfig();
-        config.setGuildName(guild.getName());
     }
 }
