@@ -19,6 +19,6 @@ public abstract class SlashCommand implements Command {
     public CommandData getCommandData() {
         return commandData;
     }
-
+    
     
 }

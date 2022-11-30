@@ -3,11 +3,11 @@ package com.github.craxlor.discordbot;
 import java.sql.SQLException;
 
 import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.listener.AutoroomHandler;
+import com.github.craxlor.discordbot.listener.GuildPreparer;
+import com.github.craxlor.discordbot.listener.MusicVoiceConnectionHandler;
+import com.github.craxlor.discordbot.listener.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
-import com.github.craxlor.discordbot.module.autoroom.handler.AutoroomHandler;
-import com.github.craxlor.discordbot.module.core.handler.GuildPreparer;
-import com.github.craxlor.discordbot.module.core.handler.SlashCommandInteractionHandler;
-import com.github.craxlor.discordbot.module.music.handler.MusicVoiceConnectionHandler;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;

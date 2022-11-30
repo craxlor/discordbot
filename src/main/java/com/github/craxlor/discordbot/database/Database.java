@@ -86,8 +86,6 @@ public class Database {
                         resultSet.getString("name"),
                         resultSet.getString("modules"),
                         resultSet.getString("colorHex"));
-            else
-                return null;
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -136,12 +134,10 @@ public class Database {
                 return new AutoroomChannel(
                         resultSet.getLong("channel_id"),
                         resultSet.getLong("trigger_id"));
-            else
-                return null;
         } catch (SQLException e) {
             logger.warn(e.getMessage());
-            return null;
         }
+        return null;
     }
 
     public List<AutoroomChannel> getAutoroomChannels(long guild_id) {

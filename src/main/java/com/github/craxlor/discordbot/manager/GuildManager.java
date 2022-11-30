@@ -6,13 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import com.github.craxlor.discordbot.command.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
-import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
-import com.github.craxlor.discordbot.module.core.command.CoreCollection;
-import com.github.craxlor.discordbot.module.core.command.slash.Module;
-import com.github.craxlor.discordbot.module.music.command.MusicCollection;
-import com.github.craxlor.discordbot.module.music.manager.MusicManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -35,22 +31,12 @@ public class GuildManager {
         Database database = Database.getInstance();
         String modules = database.getDiscordServer(guild.getIdLong()).getModules();
         if (modules != null) {
-            if (modules.contains(",")) { // multiple modules
+            if (modules.contains(",")) // multiple modules
                 for (String module : modules.split(",")) {
-                    switch (module) {
-                        case Module.OPT_AUTOROOM_NAME -> commandlist.addAll(new AutoroomCollection());
-                        case Module.OPT_MUSIC_NAME -> commandlist.addAll(new MusicCollection());
-                    }
+                    commandlist.add(module);
                 }
-            } else { // only one module
-                switch (modules) {
-                    case Module.OPT_AUTOROOM_NAME -> {
-                        commandlist.addAll(new AutoroomCollection());
-                        System.out.println("added autoroom commands");
-                    }
-                    case Module.OPT_MUSIC_NAME -> commandlist.addAll(new MusicCollection());
-                }
-            }
+            else // only one module
+                commandlist.add(modules);
         }
         musicManager = new MusicManager(getAudioPlayerManager());
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
