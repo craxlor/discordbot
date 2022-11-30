@@ -6,31 +6,38 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.github.craxlor.discordbot.command.module.autoroom.command.AutoroomCollection;
+import com.github.craxlor.discordbot.command.module.core.command.CoreCollection;
+import com.github.craxlor.discordbot.command.module.music.command.MusicCollection;
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
-import com.github.craxlor.discordbot.module.autoroom.command.AutoroomCollection;
-import com.github.craxlor.discordbot.module.core.command.CoreCollection;
-import com.github.craxlor.discordbot.module.music.command.MusicCollection;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-//TODO adapt commandlist to database
 public class Commandlist extends ArrayList<SlashCommand> {
+
+    public boolean add(String module) {
+        boolean b = false;
+        switch (module) {
+            case "autoroom" -> b = addAll(new AutoroomCollection());
+            case "music" -> b = addAll(new MusicCollection());
+        }
+        return b;
+    }
+
+    public boolean remove(String module) {
+        boolean b = false;
+        switch (module) {
+            case "autoroom" -> b = removeAll(new AutoroomCollection());
+            case "music" -> b = removeAll(new MusicCollection());
+        }
+        return b;
+    }
 
     @Nonnull
     public List<CommandData> getCommandData() {
         ArrayList<CommandData> result = new ArrayList<>();
         for (SlashCommand command : this) {
             result.add(command.getCommandData());
-        }
-        return result;
-    }
-
-    public List<CommandData> getGuildOnlyCommandsData() {
-        ArrayList<CommandData> result = new ArrayList<>();
-        for (SlashCommand command : this) {
-            if (command.isGuildOnly()) {
-                result.add(command.getCommandData());
-            }
         }
         return result;
     }
@@ -68,10 +75,13 @@ public class Commandlist extends ArrayList<SlashCommand> {
 
     @Nonnull
     public static Commandlist getGlobalCommands() {
+        // create a commandlist containing all modules
         final Commandlist commandlist = new Commandlist();
         commandlist.addAll(new CoreCollection());
         commandlist.addAll(new AutoroomCollection());
         commandlist.addAll(new MusicCollection());
+        // create a 2nd commandlist containing all gloabl commands from the 1st
+        // commandlist
         Commandlist result = new Commandlist();
         for (SlashCommand command : commandlist) {
             if (command.isGuildOnly() == false)

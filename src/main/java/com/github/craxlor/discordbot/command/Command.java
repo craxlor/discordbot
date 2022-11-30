@@ -2,7 +2,7 @@ package com.github.craxlor.discordbot.command;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.reply.Reply;
+import com.github.craxlor.discordbot.util.reply.Reply;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
