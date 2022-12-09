@@ -21,7 +21,7 @@ public abstract class SCAdmin extends SlashCommand {
     @Override
     public boolean memberHasPermission(@Nonnull Member member, @Nonnull Guild guild) {
         // check if member is developer
-        if (member.getIdLong() == Long.parseLong(Properties.get("DEVELOPER_ID"))) {
+        if (member.getIdLong() == Properties.DEV_ID) {
             return true;
         }
         // check if member is an admin

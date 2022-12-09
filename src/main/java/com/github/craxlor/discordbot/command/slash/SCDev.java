@@ -17,7 +17,7 @@ public abstract class SCDev extends SlashCommand {
 
     @Override
     public boolean memberHasPermission(@Nonnull Member member,@Nonnull  Guild guild) {
-        return member.getIdLong() == Long.parseLong(Properties.get("DEVELOPER_ID"));
+        return member.getIdLong() == Properties.DEV_ID;
     }
 
 }

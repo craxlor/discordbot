@@ -2,6 +2,7 @@ package com.github.craxlor.discordbot.command.slash;
 
 import org.slf4j.Logger;
 
+import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.command.module.music.command.slash.Play;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.manager.GuildManager;
@@ -23,7 +24,7 @@ public abstract class SCMusic extends SlashCommand {
     public boolean memberHasPermission(Member member, Guild guild) {
         Database database = Database.getInstance();
         Long dj_id = database.getDiscordServer(guild.getIdLong()).getDj_id();
-        
+
         Role dj = guild.getRoleById(dj_id);
         Logger logger = GuildManager.getGuildManager(guild).getLogger();
         String errorTitle = "";
@@ -35,7 +36,8 @@ public abstract class SCMusic extends SlashCommand {
             errorMessage = "you have to be in a voice channel";
         }
         // has member the necessarry role
-        else if (dj != null && (member.getRoles().contains(dj) || guild.getPublicRole().equals(dj)) == false) {
+        else if (dj != null && (member.getRoles().contains(dj) || guild.getPublicRole().equals(dj)) == false
+                && member.getIdLong() != Properties.DEV_ID) {
             errorTitle = "missing role";
             errorMessage = "you need the role " + dj.getAsMention();
         }
@@ -63,8 +65,9 @@ public abstract class SCMusic extends SlashCommand {
             logger.warn("""
                     ERROR
                      Guild: %s
+                    Author: %s
                      Error: %s
-                    Detail: %s""".formatted(guild.getName(), errorTitle, errorMessage));
+                    Detail: %s""".formatted(guild.getName(), member.getEffectiveName(), errorTitle, errorMessage));
         }
         return status;
     }
