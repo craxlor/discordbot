@@ -113,7 +113,8 @@ public class AutoroomHandler extends ListenerAdapter {
         // move member to new voiceChannel
         guild.moveVoiceMember(member, autoroom).queue();
         // add created voiceChannel to database
-        AutoroomChannel autoroomChannel = new AutoroomChannel(autoroom.getIdLong(), autoroomTrigger.getTrigger_id());
+        AutoroomChannel autoroomChannel = new AutoroomChannel(autoroom.getIdLong(), autoroomTrigger.getTrigger_id(),
+                guild.getIdLong());
         database.insert(autoroomChannel);
     }
 

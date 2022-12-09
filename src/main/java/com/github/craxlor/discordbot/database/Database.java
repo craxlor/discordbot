@@ -44,7 +44,7 @@ public class Database {
         //  SQL statement for creating a new table  
         String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER);";
         String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT);";
-        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER);";
+        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER, guild_id INTEGER);";
         String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT PRIMARY KEY, channel_id TEXT, video_title TEXT);";
         String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT PRIMARY KEY, video_id TEXT);";
         Statement statement = connection.createStatement();
@@ -138,7 +138,8 @@ public class Database {
             if (resultSet.getLong("channel_id") != 0)
                 return new AutoroomChannel(
                         resultSet.getLong("channel_id"),
-                        resultSet.getLong("trigger_id"));
+                        resultSet.getLong("trigger_id"),
+                        resultSet.getLong("guild_id"));
         } catch (SQLException e) {
             logger.warn(e.getMessage());
         }
@@ -155,7 +156,8 @@ public class Database {
             while (resultSet.next()) {
                 list.add(new AutoroomChannel(
                         resultSet.getLong("channel_id"),
-                        resultSet.getLong("trigger_id")));
+                        resultSet.getLong("trigger_id"),
+                        resultSet.getLong("guild_id")));
             }
             return list;
         } catch (SQLException e) {
