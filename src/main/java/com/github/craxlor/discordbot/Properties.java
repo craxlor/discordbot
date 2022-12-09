@@ -1,30 +1,24 @@
 package com.github.craxlor.discordbot;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 public class Properties {
+
+    public static long DEV_ID = 324151726330609664l;
 
     @Nullable
     public static String get(String key) {
         try {
             java.util.Properties properties = new java.util.Properties();
-            InputStream is = Properties.class.getClassLoader().getResourceAsStream("gradle.properties");
-            properties.load(is);
-            is.close();
+            FileInputStream fis = new FileInputStream("resources/gradle.properties");
+            properties.load(fis);
+            fis.close();
             return properties.getProperty(key);
         } catch (IOException e) {
             e.printStackTrace();
-            MDC.put("filename", "properties");
-            LoggerFactory.getLogger("sift").warn("""
-                    gradle.properties file cannot be found or the given key cannot be found inside gradle.properties
-                    ---------------------
-                    """ + e.getMessage());
             System.exit(0);
             return null;
         }

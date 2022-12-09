@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 
 // TODO bring back reddit stuff
-// TODO QOL checks on module enabling (e.g. before enabling module music check for the required api keys, the required dj role and send a notification to bind a musicLog channel )
 public class Main {
     public static void main(String[] args) throws SQLException {
         Database database = Database.getInstance();

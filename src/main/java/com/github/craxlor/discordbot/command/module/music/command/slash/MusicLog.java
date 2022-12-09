@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public class MusicLog extends SCAdmin {
 
-    private static final String SET_NAME = "channel";
+    private static final String SET_NAME = "bind";
     private static final String SET_DESCRIPTION = "Sets a textchannel as a music log.";
     private static final String SET_OPT_NAME = "music-channel";
     private static final String SET_OPT_DESCRIPTION = "Select the textchannel where music commands should be logged.";
@@ -39,7 +39,7 @@ public class MusicLog extends SCAdmin {
     @Override
     @Nonnull
     public String getName() {
-        return "music";
+        return "musiclog";
     }
 
     @Override

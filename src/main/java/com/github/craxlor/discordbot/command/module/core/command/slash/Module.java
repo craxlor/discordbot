@@ -2,6 +2,7 @@ package com.github.craxlor.discordbot.command.module.core.command.slash;
 
 import javax.annotation.Nonnull;
 
+import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
@@ -11,6 +12,8 @@ import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -25,20 +28,13 @@ public class Module extends SCAdmin {
     private static final String OPT_NAME = "module-option";
     private static final String OPT_DESCRIPTION = "Select a module to add or remove.";
 
-    public static final String OPT_AUTOROOM_NAME = "autoroom";
-    private static final String OPT_AUTOROOM_DESCRIPTION = "autoroom";
-    public static final String OPT_MUSIC_NAME = "music";
-    private static final String OPT_MUSIC_DESCRIPTION = "music";
-    public static final String OPT_REDDIT_NAME = "reddit";
-    private static final String OPT_REDDIT_DESCRIPTION = "reddit";
-
     public Module() {
         SubcommandData add = new SubcommandData(ADD_NAME, ADD_DESCRIPTION);
         SubcommandData remove = new SubcommandData(REMOVE_NAME, REMOVE_DESCRIPTION);
         OptionData optionData = new OptionData(OptionType.STRING, OPT_NAME, OPT_DESCRIPTION, true, false);
-        optionData.addChoice(OPT_AUTOROOM_NAME, OPT_AUTOROOM_DESCRIPTION);
-        optionData.addChoice(OPT_MUSIC_NAME, OPT_MUSIC_DESCRIPTION);
-        optionData.addChoice(OPT_REDDIT_NAME, OPT_REDDIT_DESCRIPTION);
+        optionData.addChoice(Commandlist.AUTOROOM, Commandlist.AUTOROOM);
+        optionData.addChoice(Commandlist.MUSIC, Commandlist.MUSIC);
+        optionData.addChoice(Commandlist.REDDIT, Commandlist.REDDIT);
         add.addOptions(optionData);
         remove.addOptions(optionData);
         commandData.addSubcommands(add, remove);
@@ -62,19 +58,51 @@ public class Module extends SCAdmin {
         String subcommandName = event.getSubcommandName();
         String statusDetail = "";
         Guild guild = event.getGuild();
+        // commandlist for the guild
         Commandlist commandlist = GuildManager.getGuildManager(guild).getCommandlist();
-        String module = event.getOption(OPT_NAME).getAsString();
         Database database = Database.getInstance();
+        // database entry, that will be edited
         DiscordServer discordServer = database.getDiscordServer(event.getGuild().getIdLong());
+        // module that shall be toggled
+        String module = event.getOption(OPT_NAME).getAsString();
+        // already enabled modules
         String modules = discordServer.getModules();
+        Status status = Status.ERROR;
         switch (subcommandName) {
             case ADD_NAME -> {
+                // check if module can be activated
+                switch (module) {
+                    case Commandlist.MUSIC -> {
+                        // check if all necessary entries exist in properties file
+                        String yak = Properties.get("YOUTUBE_API_KEY");
+                        String sci = Properties.get("SPOTIFY_CLIENT_ID");
+                        String scs = Properties.get("SPOTIFY_CLIENT_SECRET");
+                        if (yak != null && sci != null && scs != null) {
+                            statusDetail = "the music module requires a Youtube API Key and Spotify API Access (set tokens in .properties file)";
+                            status = Status.FAIL;
+                            return new Reply(event.deferReply(), false).onCommand(event, status, statusDetail);
+                        }
+                        Member owner = guild.getOwner();
+                        PrivateChannel privateChannel = owner.getUser().openPrivateChannel().complete();
+                        if (discordServer.getDj_id() < 1) {
+                            // dj role notification, only if role hasn't been set already
+                            privateChannel.sendMessage(
+                                    "It is advisable to bind a DJ role, otherwise no one can use the music module commands.\n/role dj")
+                                    .queue();
+                        }
+                        // music log channel notification
+                        privateChannel.sendMessage(
+                                "A log channel can be set up to better view the playlist activities of the bot.\n/musicLog bind")
+                                .queue();
+                    }
+                }
+                // edit database entry
                 if (modules == null)
                     discordServer.setModules(module);
                 else
                     discordServer.setModules(modules + "," + module);
-
                 commandlist.add(module);
+                status = Status.SUCCESS;
                 statusDetail = "Added the module: **" + module + "**";
             }
             case REMOVE_NAME -> {
@@ -95,18 +123,18 @@ public class Module extends SCAdmin {
                         modules = null;
                     }
                     discordServer.setModules(modules);
+                    commandlist.remove(module);
+                    status = Status.SUCCESS;
+                    statusDetail = "Removed the module: **" + module + "**";
                 }
-                commandlist.remove(module);
-                statusDetail = "Removed the module: **" + module + "**";
             }
         }
         database.update(discordServer);
-
-        statusDetail += "\nUpdating commands will take a while. Be patient. (:";
+        statusDetail += "\nUpdating commands will take a while. Please be patient. (:";
         // update commandlist
         guild.updateCommands().queue();
         guild.updateCommands().addCommands(commandlist.getGuildCommands().getCommandData()).queue();
-        return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS, statusDetail);
+        return new Reply(event.deferReply(), false).onCommand(event, status, statusDetail);
     }
 
     @Override

@@ -10,16 +10,19 @@ import com.github.craxlor.discordbot.command.module.autoroom.command.AutoroomCol
 import com.github.craxlor.discordbot.command.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.command.module.music.command.MusicCollection;
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
-
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class Commandlist extends ArrayList<SlashCommand> {
 
+    public static final String AUTOROOM = "autoroom";
+    public static final String MUSIC = "music";
+    public static final String REDDIT = "reddit";
+
     public boolean add(String module) {
         boolean b = false;
         switch (module) {
-            case "autoroom" -> b = addAll(new AutoroomCollection());
-            case "music" -> b = addAll(new MusicCollection());
+            case AUTOROOM -> b = addAll(new AutoroomCollection());
+            case MUSIC -> b = addAll(new MusicCollection());
         }
         return b;
     }
@@ -27,8 +30,8 @@ public class Commandlist extends ArrayList<SlashCommand> {
     public boolean remove(String module) {
         boolean b = false;
         switch (module) {
-            case "autoroom" -> b = removeAll(new AutoroomCollection());
-            case "music" -> b = removeAll(new MusicCollection());
+            case AUTOROOM -> b = removeAll(new AutoroomCollection());
+            case MUSIC -> b = removeAll(new MusicCollection());
         }
         return b;
     }
