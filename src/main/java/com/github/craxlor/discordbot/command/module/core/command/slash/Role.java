@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-//TODO DJ role has to be added with the music package, not in the core package
 public class Role extends SCAdmin {
 
 	private static final String ADMIN_NAME = "admin";

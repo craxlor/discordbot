@@ -15,10 +15,11 @@ import org.slf4j.LoggerFactory;
 import com.github.craxlor.discordbot.database.element.AutoroomChannel;
 import com.github.craxlor.discordbot.database.element.AutoroomTrigger;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
+import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 
 public class Database {
     private static Database INSTANCE;
-    public static final String URL = "jdbc:sqlite:./resources/discordBotDB.db";
+    private static final String URL = "jdbc:sqlite:./resources/discordBotDB.db";
     Connection connection;
     Logger logger;
     PreparedStatement preparedStatement;
@@ -41,17 +42,21 @@ public class Database {
 
     public void setupTables() throws SQLException {
         //  SQL statement for creating a new table  
-        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT NOT NULL, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER);";
+        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER);";
         String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT);";
         String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER);";
+        String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT PRIMARY KEY, channel_id TEXT, video_title TEXT);";
+        String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT PRIMARY KEY, video_id TEXT);";
         Statement statement = connection.createStatement();
         statement.execute(guildTable);
         statement.execute(autoroomTriggerTable);
         statement.execute(autoroomChannelTable);
+        statement.execute(youtubeVideoTable);
+        statement.execute(youtubeSearchTable);
         statement.close();
     }
 
-    // GuildEntries
+    // DISCORDSERVER
     public void insert(DiscordServer discordServer) {
         String sql = "INSERT INTO guilds(guild_id, admin_id, dj_id, musicLog_id, name, modules, colorHex) VALUES(?,?,?,?,?,?,?)";
         try {
@@ -245,6 +250,73 @@ public class Database {
         }
     }
 
+    // YOUTUBESEARCH
+    public void insert(YouTubeSearch youTubeSearch) {
+        String sql_ytSearches = "INSERT INTO ytSearches(searchTerm, video_id) VALUES(?,?)";
+        String sql_ytVideos = "INSERT INTO ytVideos(video_id, channel_id, video_title) VALUES(?,?,?)";
+        try {
+            preparedStatement = connection.prepareStatement(sql_ytSearches);
+            preparedStatement.setString(1, youTubeSearch.getSearchTerm());
+            preparedStatement.setString(2, youTubeSearch.getVideo_id());
+            preparedStatement.executeUpdate();
+
+            preparedStatement = connection.prepareStatement(sql_ytVideos);
+            preparedStatement.setString(1, youTubeSearch.getVideo_id());
+            preparedStatement.setString(2, youTubeSearch.getChannel_id());
+            preparedStatement.setString(3, youTubeSearch.getVideo_title());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("null")
+    public YouTubeSearch getYouTubeSearchById(String video_id) {
+        String sql = "SELECT * FROM ytVideos WHERE video_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, video_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.getString("video_id") != null)
+                return new YouTubeSearch(
+                        video_id,
+                        resultSet.getString("video_title"),
+                        resultSet.getString("channel_id"));
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return null;
+    }
+
+    @SuppressWarnings("null")
+    public YouTubeSearch getYouTubeSearchBySearchTerm(String searchTerm) {
+        String sql = "SELECT * FROM ytSearches WHERE searchTerm = ?";
+        try {
+            // get video_id by searchTerm
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, searchTerm);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            String video_id = resultSet.getString("video_id");
+            if (video_id == null)
+                return null;
+            // get further information by videoId
+            sql = "SELECT * FROM ytVideos WHERE video_id = ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, video_id);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.getString("video_id") != null)
+                return new YouTubeSearch(
+                        video_id,
+                        resultSet.getString("video_title"),
+                        resultSet.getString("channel_id"),
+                        searchTerm);
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return null;
+    }
+
+    // OTHER
     public void closeConnection() {
         try {
             preparedStatement.close();

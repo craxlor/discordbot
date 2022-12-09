@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public interface Command {
 
+    @Nonnull
     CommandData getCommandData();
 
     boolean memberHasPermission(@Nonnull Member member, @Nonnull Guild guild);

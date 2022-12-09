@@ -25,6 +25,7 @@ public class Properties {
                     gradle.properties file cannot be found or the given key cannot be found inside gradle.properties
                     ---------------------
                     """ + e.getMessage());
+            System.exit(0);
             return null;
         }
     }

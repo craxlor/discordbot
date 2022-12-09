@@ -1,5 +1,7 @@
 package com.github.craxlor.discordbot.command.slash;
 
+import javax.annotation.Nonnull;
+
 import com.github.craxlor.discordbot.command.Command;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -8,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 public abstract class SlashCommand implements Command {
 
+    @Nonnull
     protected SlashCommandData commandData;
 
     public SlashCommand() {
@@ -16,6 +19,7 @@ public abstract class SlashCommand implements Command {
     }
 
     @Override
+    @Nonnull
     public CommandData getCommandData() {
         return commandData;
     }
