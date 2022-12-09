@@ -7,11 +7,9 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.json.simple.JSONObject;
-
 import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 import com.github.craxlor.discordbot.listener.SlashCommandInteractionHandler;
-import com.github.craxlor.discordbot.util.music.YouTubeHelper;
 import com.github.craxlor.jReddit.RedditPost;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
@@ -42,37 +40,28 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
     }
 
     @SuppressWarnings("null")
-    public EmbedBuilder addMusicFields(@Nullable AudioTrackInfo trackInfo, @Nullable JSONObject videoInformation) {
-        // thumbnail
-        if (videoInformation != null) {
-            String thumbnailURL = (String) videoInformation.get("thumbnailUrl");
-            setThumbnail(thumbnailURL);
-        }
+    public EmbedBuilder addMusicFields(@Nullable AudioTrackInfo trackInfo, @Nullable YouTubeSearch youTubeSearch) {
         // track name field
-        if (videoInformation != null) {
-            String videoURL = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
-            String videoTitle = (String) videoInformation.get("vieoTitle");
-            addField("Track", "[" + videoTitle + "](" + videoURL + ")", false);
-
-        } else if (trackInfo != null) {
+        if (youTubeSearch != null) {
+            setThumbnail(youTubeSearch.getVideoThumbnailURL());
+            addField("Track", "[" + youTubeSearch.getVideo_title() + "](" + youTubeSearch.getVideoURL() + ")", false);
+        } else if (trackInfo != null)
             addField("Track", "[" + trackInfo.title + "](" + trackInfo.uri + ")", false);
-        }
+
         // track length field
         if (trackInfo != null) {
             long minutes = TimeUnit.MILLISECONDS.toMinutes(trackInfo.length);
             long seconds = TimeUnit.MILLISECONDS.toSeconds(trackInfo.length) % 60;
             String second = String.valueOf(seconds);
-            if (second.length() < 2) {
+            if (second.length() < 2)
                 second = "0" + second;
-            }
             addField("Length", minutes + ":" + second + " minutes", true);
         }
         // channel field
         if (trackInfo != null) {
-            if (videoInformation != null) {
-                String channelURL = YouTubeHelper.YOUTUBE_CHANNEL_PREFIX + (String) videoInformation.get("channelId");
-                addField("Youtube channel", "[" + trackInfo.author + "](" + channelURL + ")", true);
-            } else
+            if (youTubeSearch != null)
+                addField("Youtube channel", "[" + trackInfo.author + "](" + youTubeSearch.getChannelURL() + ")", true);
+            else
                 addField("Youtube channel", trackInfo.author, true);
         }
         return this;

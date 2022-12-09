@@ -3,9 +3,8 @@ package com.github.craxlor.discordbot.util.reply;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.json.simple.JSONObject;
-
 import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -47,11 +46,11 @@ public class Reply {
 
     @SuppressWarnings("null")
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
-            @Nullable AudioTrackInfo audioTrackInfo, @Nullable JSONObject videoInformation) {
+            @Nullable AudioTrackInfo audioTrackInfo, @Nullable YouTubeSearch youTubeSearch) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setCommandReply(event, status, statusDetail);
         if (audioTrackInfo != null)
-            embedBuilder.addMusicFields(audioTrackInfo, videoInformation);
+            embedBuilder.addMusicFields(audioTrackInfo, youTubeSearch);
         messageEmbed = embedBuilder.build(event.getMember());
         // send reply message in music log channel
         Guild guild = event.getGuild();
@@ -67,13 +66,13 @@ public class Reply {
     }
 
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
-            AudioTrackInfo audioTrackInfo) {
+           AudioTrackInfo audioTrackInfo) {
         return onMusic(event, status, statusDetail, audioTrackInfo, null);
     }
 
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
-            JSONObject videoInformation) {
-        return onMusic(event, status, statusDetail, null, videoInformation);
+            YouTubeSearch youTubeSearch) {
+        return onMusic(event, status, statusDetail, null, youTubeSearch);
     }
 
     public void send() {

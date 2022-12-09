@@ -7,11 +7,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.json.simple.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.github.craxlor.discordbot.Properties;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -33,7 +34,8 @@ public class YouTubeHelper {
             public void initialize(HttpRequest request) throws IOException {
             }
         };
-        YouTubeRequestInitializer youTubeRequestInitializer = new YouTubeRequestInitializer(Properties.get("YOUTUBE_API_KEY"));
+        YouTubeRequestInitializer youTubeRequestInitializer = new YouTubeRequestInitializer(
+                Properties.get("YOUTUBE_API_KEY"));
         return new YouTube.Builder(httpTransport, GsonFactory.getDefaultInstance(), httpRequestInitializer)
                 .setApplicationName("selfmadecrapcode")
                 .setYouTubeRequestInitializer(youTubeRequestInitializer).build();
@@ -52,18 +54,15 @@ public class YouTubeHelper {
      *         reached
      */
     @Nullable
-    @SuppressWarnings("unchecked")
-    public static JSONObject findVideo(@Nonnull String searchTerm) {
-        YouTubeStorage youTubeStorage = YouTubeStorage.getInstance();
-        // check if the searchTerm has been used already
-        if (youTubeStorage.containsSearchTerm(searchTerm)) {
-            return youTubeStorage.getBySearchTerm(searchTerm);
-        }
-        if (youTubeStorage.getQuota() < 100) {
-            JSONObject error = new JSONObject();
-            error.put("error", "quota limit reached");
-            return error;
-        }
+    @SuppressWarnings("null")
+    public static YouTubeSearch findVideo(@Nonnull String searchTerm) {
+        Database database = Database.getInstance();
+
+        YouTubeSearch youTubeSearch = database.getYouTubeSearchBySearchTerm(searchTerm);
+        // found searchTerm in database -> reuse reult to save on quotas
+        if (youTubeSearch != null)
+            return youTubeSearch;
+
         try {
             YouTube.Search.List request = getService().search().list("snippet");
             SearchListResponse response = request
@@ -72,18 +71,9 @@ public class YouTubeHelper {
                     .setSafeSearch("none")
                     .setType("video")
                     .execute();
-            // calculate costs for the executed request
-            youTubeStorage.trackQuota(100);
-            // prepare checks to get best matching searchresult
-            JSONObject entry = new JSONObject();
-            entry.put("searchTerm", searchTerm);
             // get all searchresults
             List<SearchResult> SearchResults = response.getItems();
             for (SearchResult searchResult : SearchResults) {
-                entry.put("vieoTitle", searchResult.getSnippet().getTitle());
-                entry.put("videoId", searchResult.getId().getVideoId());
-                entry.put("channelId", searchResult.getSnippet().getChannelId());
-                entry.put("thumbnailUrl", searchResult.getSnippet().getThumbnails().getHigh().getUrl());
                 int searchTermPartMatches = 0;
                 for (String searchTermPart : searchTerm.split(" ")) {
                     for (String titlePart : searchResult.getSnippet().getTitle().split(" ")) {
@@ -92,18 +82,23 @@ public class YouTubeHelper {
                         }
                     }
                 }
-                // break if more than half of the searchTermParts have been found in the
+                // save result if more than half of the searchTermParts have been found in the
                 // videoTitle
-                if (searchTermPartMatches >= searchTerm.split(" ").length / 2f)
-                    break;
+                if (searchTermPartMatches >= searchTerm.split(" ").length / 2f) {
+                    youTubeSearch = new YouTubeSearch(
+                            searchResult.getId().getVideoId(),
+                            searchResult.getSnippet().getTitle(),
+                            searchResult.getSnippet().getChannelId(),
+                            searchTerm);
+                    database.insert(youTubeSearch);
+                    return youTubeSearch;
+                }
             }
-            youTubeStorage.add(entry);
-            return entry;
         } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace();
             MDC.put("filename", "youtube");
             LoggerFactory.getLogger("sift").warn(e.getMessage());
-            return null;
         }
+        return null;
     }
 }

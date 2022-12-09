@@ -18,13 +18,13 @@ import net.dv8tion.jda.api.entities.Guild;
 public class GuildManager {
     private static HashMap<Long, GuildManager> guildManagerMap = new HashMap<>();
     private static AudioPlayerManager playerManager;
-    private Guild guild;
+    private String guild_id;
     private Logger logger;
     private Commandlist commandlist;
     private MusicManager musicManager;
 
     protected GuildManager(Guild guild) {
-        this.guild = guild;
+        this.guild_id = guild.getId();
         logger = LoggerFactory.getLogger("sift");
         commandlist = new Commandlist();
         commandlist.addAll(new CoreCollection());
@@ -61,7 +61,7 @@ public class GuildManager {
     }
 
     public Logger getLogger() {
-        MDC.put("filename", guild.getId());
+        MDC.put("filename", guild_id);
         return logger;
     }
 

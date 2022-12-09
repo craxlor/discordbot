@@ -4,14 +4,13 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import org.json.simple.JSONObject;
-
 import com.github.craxlor.discordbot.command.slash.SCMusic;
+import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 import com.github.craxlor.discordbot.manager.GuildManager;
 import com.github.craxlor.discordbot.manager.MusicManager;
 import com.github.craxlor.discordbot.util.music.SpotifyHelper;
 import com.github.craxlor.discordbot.util.music.YouTubeHelper;
-import com.github.craxlor.discordbot.util.music.YouTubeStorage;
 import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -89,12 +88,13 @@ public class Play extends SCMusic {
             }
         }
 
-        YouTubeStorage youTubeStorage = YouTubeStorage.getInstance();
-        JSONObject videoInformation = null;
+        Database database = Database.getInstance();
+        YouTubeSearch youTubeSearch = null;
+
         if (parameter.contains("http") == false && parameter.contains("www.") == false) {
             // assume that input is not containing an url but a searchTerm to look up
-            videoInformation = YouTubeHelper.findVideo(parameter);
-            parameter = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
+            youTubeSearch = YouTubeHelper.findVideo(parameter);
+            parameter = youTubeSearch.getVideoURL();
         }
         // check if the YT-Video is known in YouTubeStorage
         else if (parameter.contains("youtube.com/watch?v=")) {
@@ -105,9 +105,7 @@ public class Play extends SCMusic {
             else
                 videoId = parameter.substring(parameter.lastIndexOf("?v=") + 3, parameter.length());
             // retrieve YouTubeStorage entry to provide more information in command-reply
-            if (youTubeStorage.containsVideoId(videoId)) {
-                videoInformation = youTubeStorage.getByVideoId(videoId);
-            }
+            youTubeSearch = database.getYouTubeSearchById(videoId);
         }
         // check if provided url is from spotify
         else if (parameter.contains("open.spotify")) {
@@ -115,13 +113,9 @@ public class Play extends SCMusic {
                 return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
                         "I just support spotify **tracks**!");
             String searchTerm = convertSpotifyUrlToSearchTerm(parameter);
-            videoInformation = YouTubeHelper.findVideo(searchTerm);
-            parameter = YouTubeHelper.YOUTUBE_VIDEO_PREFIX + (String) videoInformation.get("videoId");
+            youTubeSearch = YouTubeHelper.findVideo(searchTerm);
+            parameter = youTubeSearch.getVideoURL();
         }
-
-        if (videoInformation != null && videoInformation.get("error") != null)
-            return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
-                    "The daily quota limit has been reached. Therfore I cannot do this action!");
 
         GuildManager.getAudioPlayerManager().loadItemOrdered(musicManager, parameter, new AudioLoadResultHandler() {
             @Override
@@ -175,7 +169,7 @@ public class Play extends SCMusic {
             }
         }).get();
 
-        return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo, videoInformation);
+        return new Reply(event.deferReply(), false).onMusic(event, status, commandAction, trackInfo, youTubeSearch);
     }
 
     @SuppressWarnings("null")
