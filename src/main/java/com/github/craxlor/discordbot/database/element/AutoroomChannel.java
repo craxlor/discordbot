@@ -1,11 +1,12 @@
 package com.github.craxlor.discordbot.database.element;
 
 public class AutoroomChannel {
-    private long channel_id, trigger_id;
+    private long channel_id, trigger_id, guild_id;
 
-    public AutoroomChannel(long channel_id, long trigger_id) {
+    public AutoroomChannel(long channel_id, long trigger_id, long guild_id) {
         this.channel_id = channel_id;
         this.trigger_id = trigger_id;
+        this.guild_id = guild_id;
     }
 
     // SETTER
@@ -17,6 +18,10 @@ public class AutoroomChannel {
         this.trigger_id = trigger_id;
     }
 
+    public void setGuild_id(long guild_id) {
+        this.guild_id = guild_id;
+    }
+
     // GETTER
     public long getChannel_id() {
         return channel_id;
@@ -24,6 +29,10 @@ public class AutoroomChannel {
 
     public long getTrigger_id() {
         return trigger_id;
+    }
+
+    public long getGuild_id() {
+        return guild_id;
     }
 
 }
