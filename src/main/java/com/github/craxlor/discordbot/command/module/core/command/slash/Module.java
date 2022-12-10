@@ -77,7 +77,7 @@ public class Module extends SCAdmin {
                         String yak = Properties.get("YOUTUBE_API_KEY");
                         String sci = Properties.get("SPOTIFY_CLIENT_ID");
                         String scs = Properties.get("SPOTIFY_CLIENT_SECRET");
-                        if (yak != null && sci != null && scs != null) {
+                        if (yak == null || sci == null || scs == null) {
                             statusDetail = "the music module requires a Youtube API Key and Spotify API Access (set tokens in .properties file)";
                             status = Status.FAIL;
                             return new Reply(event.deferReply(), false).onCommand(event, status, statusDetail);
