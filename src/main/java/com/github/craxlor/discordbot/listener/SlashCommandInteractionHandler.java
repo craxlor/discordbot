@@ -11,7 +11,6 @@ import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -21,7 +20,6 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
     @SuppressWarnings("null")
     public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
         Guild guild = event.getGuild();
-        Member member = event.getMember();
         GuildManager guildManager = GuildManager.getGuildManager(guild);
         Logger logger = guildManager.getLogger();
         // find command
@@ -36,7 +34,7 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
             return;
         }
         // check if member is allowed to use the command
-        if (slashCommand.memberHasPermission(member, event.getGuild()) == false) {
+        if (slashCommand.memberHasPermission(event.getMember(), event.getGuild()) == false) {
             statusDetail = "missing permission";
             reply.onCommand(event, Status.FAIL, statusDetail);
             logger.warn(LogHelper.logCommand(event, Status.FAIL, statusDetail));
@@ -45,7 +43,8 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
         // try to execute command
         try {
             reply = slashCommand.execute(event);
-            logger.info(LogHelper.logCommand(event, Status.SUCCESS, statusDetail));
+            // TODO insert logging to reply for better, more accurate logging
+            logger.info(LogHelper.logCommand(event, Status.SUCCESS, "successful execution"));
             reply.send();
         } catch (Exception e) {
             statusDetail = """
