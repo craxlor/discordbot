@@ -6,15 +6,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-
 import com.github.craxlor.discordbot.manager.GuildManager;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.managers.AudioManager;
 
 public class MusicVoiceConnectionHandler extends ListenerAdapter {
 
@@ -37,12 +34,10 @@ public class MusicVoiceConnectionHandler extends ListenerAdapter {
     private class AutoDisconnect extends TimerTask {
         private Guild guild;
         private GuildManager guildManager;
-        private Logger logger;
 
         AutoDisconnect(Guild guild) {
             this.guild = guild;
             guildManager = GuildManager.getGuildManager(guild);
-            logger = guildManager.getLogger();
         }
 
         /**
@@ -52,9 +47,8 @@ public class MusicVoiceConnectionHandler extends ListenerAdapter {
         public void run() {
             // check if bot is not playing a track
             if (guildManager.getMusicManager().isPlaying() == false) {
-                final AudioManager manager = guild.getAudioManager();
-                manager.closeAudioConnection(); // disconnect bot
-                logger.info("bot has automatically disconnected itself");
+                guild.getAudioManager().closeAudioConnection(); // disconnect bot
+                guildManager.getLogger().info("bot has automatically disconnected itself");
                 cancel(); // stop task
             }
         }
