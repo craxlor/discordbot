@@ -2,7 +2,7 @@ package com.github.craxlor.discordbot.command.slash;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.Properties;
+import com.github.craxlor.discordbot.util.Properties;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;

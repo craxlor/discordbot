@@ -2,13 +2,13 @@ package com.github.craxlor.discordbot.command.slash;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.command.Command;
+import com.github.craxlor.discordbot.command.ICommand;
 
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
-public abstract class SlashCommand implements Command {
+public abstract class SlashCommand implements ICommand {
 
     @Nonnull
     protected SlashCommandData commandData;

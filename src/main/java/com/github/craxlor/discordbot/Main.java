@@ -8,6 +8,7 @@ import com.github.craxlor.discordbot.listener.GuildPreparer;
 import com.github.craxlor.discordbot.listener.MusicVoiceConnectionHandler;
 import com.github.craxlor.discordbot.listener.RedditHandler;
 import com.github.craxlor.discordbot.listener.SlashCommandInteractionHandler;
+import com.github.craxlor.discordbot.util.Properties;
 import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
 
 import net.dv8tion.jda.api.JDA;
