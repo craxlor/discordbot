@@ -99,6 +99,7 @@ public class RedditGallery extends SCAdmin {
     @SuppressWarnings("null")
     private Reply create(SlashCommandInteractionEvent event) throws ParseException, IOException {
         Guild guild = event.getGuild();
+        GuildManager guildManager = GuildManager.getGuildManager(guild);
         String subredditName = event.getOption(CREATE_OPT_SUBREDDIT_NAME).getAsString();
         Reddit reddit = new Reddit();
         SubReddit subReddit = reddit.getSubReddit(subredditName);
@@ -116,6 +117,12 @@ public class RedditGallery extends SCAdmin {
                         "There is already an ongoing task for the subreddit **" + subredditName + "** on this guild!");
             }
         }
+        // check if the RedditScheduler already manages 10 tasks
+        if (guildManager.getRedditScheduler().size() >= 10) {
+            return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
+                    "You can only maintain a maximum of 10 reddit galleries per guild.");
+        }
+
         // setup textchannel
         TextChannel textChannel = null;
         if (event.getOption(CREATE_OPT_CHANNEL_NAME) == null) {
@@ -144,7 +151,7 @@ public class RedditGallery extends SCAdmin {
         database.insert(redditTask);
 
         // schedule the task
-        GuildManager.getGuildManager(guild).getRedditScheduler().schedule(redditTask);
+        guildManager.getRedditScheduler().schedule(redditTask);
 
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS,
                 "Created a gallery for the subreddit: " + subredditName + ".");
