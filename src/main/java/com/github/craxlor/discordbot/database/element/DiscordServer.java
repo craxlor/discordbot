@@ -86,7 +86,8 @@ public class DiscordServer {
     public String getModules() {
         return modules;
     }
-
+    
+    @Nullable
     public String getColorHex() {
         return colorHex;
     }

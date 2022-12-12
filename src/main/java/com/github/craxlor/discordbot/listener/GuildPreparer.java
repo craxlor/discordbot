@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
-import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.util.core.GuildManager;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;

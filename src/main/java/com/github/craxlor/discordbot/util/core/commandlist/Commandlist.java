@@ -1,4 +1,4 @@
-package com.github.craxlor.discordbot.manager.commandlist;
+package com.github.craxlor.discordbot.util.core.commandlist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,9 @@ import javax.annotation.Nullable;
 import com.github.craxlor.discordbot.command.module.autoroom.command.AutoroomCollection;
 import com.github.craxlor.discordbot.command.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.command.module.music.command.MusicCollection;
+import com.github.craxlor.discordbot.command.module.reddit.RedditCollection;
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
+
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public class Commandlist extends ArrayList<SlashCommand> {
@@ -23,6 +25,7 @@ public class Commandlist extends ArrayList<SlashCommand> {
         switch (module) {
             case AUTOROOM -> b = addAll(new AutoroomCollection());
             case MUSIC -> b = addAll(new MusicCollection());
+            case REDDIT -> b = addAll(new RedditCollection());
         }
         return b;
     }
@@ -32,6 +35,7 @@ public class Commandlist extends ArrayList<SlashCommand> {
         switch (module) {
             case AUTOROOM -> b = removeAll(new AutoroomCollection());
             case MUSIC -> b = removeAll(new MusicCollection());
+            case REDDIT -> b = removeAll(new RedditCollection());
         }
         return b;
     }

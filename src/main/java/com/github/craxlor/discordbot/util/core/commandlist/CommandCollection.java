@@ -1,4 +1,4 @@
-package com.github.craxlor.discordbot.manager.commandlist;
+package com.github.craxlor.discordbot.util.core.commandlist;
 
 import java.util.Collection;
 
