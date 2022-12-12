@@ -91,6 +91,12 @@ public class RedditScheduler {
         }
     }
 
+    public int size() {
+        if (timerList == null)
+            return -1;
+        return timerList.size();
+    }
+
     /**
      * Next full hour.
      *
