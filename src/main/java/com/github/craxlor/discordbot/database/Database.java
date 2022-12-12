@@ -9,12 +9,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.craxlor.discordbot.database.element.AutoroomChannel;
 import com.github.craxlor.discordbot.database.element.AutoroomTrigger;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
+import com.github.craxlor.discordbot.database.element.RedditTask;
 import com.github.craxlor.discordbot.database.element.YouTubeSearch;
 
 public class Database {
@@ -42,17 +46,19 @@ public class Database {
 
     public void setupTables() throws SQLException {
         //  SQL statement for creating a new table  
-        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER);";
-        String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT);";
-        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER, guild_id INTEGER);";
-        String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT PRIMARY KEY, channel_id TEXT, video_title TEXT);";
-        String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT PRIMARY KEY, video_id TEXT);";
+        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER)";
+        String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT)";
+        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER, guild_id INTEGER)";
+        String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT PRIMARY KEY, channel_id TEXT, video_title TEXT)";
+        String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT PRIMARY KEY, video_id TEXT)";
+        String redditTasks = "CREATE TABLE IF NOT EXISTS redditTasks (channel_id INTEGER PRIMARY KEY, subreddit TEXT, firstTime TEXT, period INTEGER, guild_id INTEGER)";
         Statement statement = connection.createStatement();
         statement.execute(guildTable);
         statement.execute(autoroomTriggerTable);
         statement.execute(autoroomChannelTable);
         statement.execute(youtubeVideoTable);
         statement.execute(youtubeSearchTable);
+        statement.execute(redditTasks);
         statement.close();
     }
 
@@ -147,7 +153,7 @@ public class Database {
     }
 
     public List<AutoroomChannel> getAutoroomChannels(long guild_id) {
-        String sql = "SELECT * FROM autoroomChannels WHERE trigger_id = ?";
+        String sql = "SELECT * FROM autoroomChannels WHERE guild_id = ?";
         try {
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, guild_id);
@@ -316,6 +322,80 @@ public class Database {
             logger.warn(e.getMessage());
         }
         return null;
+    }
+
+    // REDDITTASK
+    public void insert(RedditTask redditTask) {
+        String sql = "INSERT INTO redditTasks(channel_id, subreddit, firstTime, period, guild_id) VALUES(?,?,?,?,?)";
+        String enc64 = Base64.encodeBase64String(redditTask.getSubreddit().getBytes());
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, redditTask.getChannel_id());
+            preparedStatement.setString(2, enc64);
+            preparedStatement.setString(3, redditTask.getFirstTime());
+            preparedStatement.setLong(4, redditTask.getPeriod());
+            preparedStatement.setLong(5, redditTask.getGuild_id());
+            preparedStatement.executeUpdate();
+            logger.info("inserted new redditTask");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void removeRedditTask(long channel_id) {
+        String sql = "DELETE FROM redditTasks WHERE channel_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, channel_id);
+            preparedStatement.executeUpdate();
+            logger.info("deleted a redditTask");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public RedditTask getRedditTask(Long guild_id, String subreddit) {
+        String sql = "SELECT * FROM redditTasks WHERE guild_id = ? AND subreddit = ?";
+        String enc64 = Base64.encodeBase64String(subreddit.getBytes());
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, guild_id);
+            preparedStatement.setString(2, enc64);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.getString("channel_id") != null)
+                return new RedditTask(
+                        resultSet.getLong("channel_id"),
+                        new String(Base64.decodeBase64(resultSet.getString("subreddit"))),
+                        resultSet.getString("firstTime"),
+                        resultSet.getLong("period"),
+                        resultSet.getLong("guild_id"));
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+        return null;
+    }
+
+    @Nullable
+    public List<RedditTask> getRedditTasks(long guild_id) {
+        String sql = "SELECT * FROM redditTasks WHERE guild_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, guild_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<RedditTask> list = new ArrayList<>();
+            while (resultSet.next()) {
+                list.add(new RedditTask(
+                        resultSet.getLong("channel_id"),
+                        resultSet.getString("subreddit"),
+                        resultSet.getString("firstTime"),
+                        resultSet.getLong("period"),
+                        resultSet.getLong("guild_id")));
+            }
+            return list;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+            return null;
+        }
     }
 
     // OTHER
