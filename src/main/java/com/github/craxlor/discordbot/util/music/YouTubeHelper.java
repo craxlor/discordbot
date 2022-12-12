@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.database.element.YouTubeSearch;
+import com.github.craxlor.discordbot.util.Properties;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;

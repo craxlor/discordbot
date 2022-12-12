@@ -2,9 +2,9 @@ package com.github.craxlor.discordbot.command.slash;
 
 import org.slf4j.Logger;
 
-import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.command.module.music.command.slash.Play;
 import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.util.Properties;
 import com.github.craxlor.discordbot.util.core.GuildManager;
 
 import net.dv8tion.jda.api.entities.Guild;

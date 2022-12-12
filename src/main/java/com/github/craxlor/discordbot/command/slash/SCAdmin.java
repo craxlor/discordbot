@@ -4,8 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.database.Database;
+import com.github.craxlor.discordbot.util.Properties;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

@@ -2,10 +2,10 @@ package com.github.craxlor.discordbot.command.module.core.command.slash;
 
 import javax.annotation.Nonnull;
 
-import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
+import com.github.craxlor.discordbot.util.Properties;
 import com.github.craxlor.discordbot.util.core.GuildManager;
 import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
 import com.github.craxlor.discordbot.util.reply.Reply;

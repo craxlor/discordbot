@@ -1,4 +1,4 @@
-package com.github.craxlor.discordbot;
+package com.github.craxlor.discordbot.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;

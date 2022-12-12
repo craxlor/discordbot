@@ -9,7 +9,7 @@ import org.apache.hc.core5.http.ParseException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import com.github.craxlor.discordbot.Properties;
+import com.github.craxlor.discordbot.util.Properties;
 
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
