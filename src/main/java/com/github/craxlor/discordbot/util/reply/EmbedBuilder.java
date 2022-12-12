@@ -72,7 +72,7 @@ public class EmbedBuilder extends net.dv8tion.jda.api.EmbedBuilder {
         setImage(redditPost.getUrl_overridden_by_dest());
         setTitle(redditPost.getTitle(), redditPost.getPermalink());
         setFooter(" 👍 " + redditPost.getUps() + " |" + " 💬 " + redditPost.getNum_comments() + " - "
-                + redditPost.getSubReddit());
+                + "r/" + redditPost.getSubReddit());
         return this;
     }
 
