@@ -3,8 +3,8 @@ package com.github.craxlor.discordbot.command.module.core.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCDev;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
+import com.github.craxlor.discordbot.util.core.GuildManager;
+import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
 import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 

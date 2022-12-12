@@ -3,8 +3,8 @@ package com.github.craxlor.discordbot.command.module.music.command.slash;
 import javax.annotation.Nonnull;
 
 import com.github.craxlor.discordbot.command.slash.SCMusic;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.MusicManager;
+import com.github.craxlor.discordbot.util.core.GuildManager;
+import com.github.craxlor.discordbot.util.music.MusicManager;
 import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;

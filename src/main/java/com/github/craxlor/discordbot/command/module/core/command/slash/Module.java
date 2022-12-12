@@ -6,8 +6,8 @@ import com.github.craxlor.discordbot.Properties;
 import com.github.craxlor.discordbot.command.slash.SCAdmin;
 import com.github.craxlor.discordbot.database.Database;
 import com.github.craxlor.discordbot.database.element.DiscordServer;
-import com.github.craxlor.discordbot.manager.GuildManager;
-import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
+import com.github.craxlor.discordbot.util.core.GuildManager;
+import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
 import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;
 

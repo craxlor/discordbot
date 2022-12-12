@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
-import com.github.craxlor.discordbot.manager.GuildManager;
+import com.github.craxlor.discordbot.util.core.GuildManager;
 import com.github.craxlor.discordbot.util.reply.LogHelper;
 import com.github.craxlor.discordbot.util.reply.Reply;
 import com.github.craxlor.discordbot.util.reply.Status;

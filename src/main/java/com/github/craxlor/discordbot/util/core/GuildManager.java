@@ -1,4 +1,4 @@
-package com.github.craxlor.discordbot.manager;
+package com.github.craxlor.discordbot.util.core;
 
 import java.util.HashMap;
 
@@ -8,7 +8,9 @@ import org.slf4j.MDC;
 
 import com.github.craxlor.discordbot.command.module.core.command.CoreCollection;
 import com.github.craxlor.discordbot.database.Database;
-import com.github.craxlor.discordbot.manager.commandlist.Commandlist;
+import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
+import com.github.craxlor.discordbot.util.music.MusicManager;
+import com.github.craxlor.discordbot.util.reddit.RedditScheduler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -22,10 +24,12 @@ public class GuildManager {
     private Logger logger;
     private Commandlist commandlist;
     private MusicManager musicManager;
+    private RedditScheduler redditScheduler;
 
     protected GuildManager(Guild guild) {
         this.guild_id = guild.getId();
         logger = LoggerFactory.getLogger("sift");
+        // commandlist
         commandlist = new Commandlist();
         commandlist.addAll(new CoreCollection());
         Database database = Database.getInstance();
@@ -38,6 +42,9 @@ public class GuildManager {
             else // only one module
                 commandlist.add(modules);
         }
+        // reddit
+        redditScheduler = new RedditScheduler(guild);
+        // music
         musicManager = new MusicManager(getAudioPlayerManager());
         guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
     }
@@ -71,5 +78,9 @@ public class GuildManager {
 
     public MusicManager getMusicManager() {
         return musicManager;
+    }
+
+    public RedditScheduler getRedditScheduler() {
+        return redditScheduler;
     }
 }

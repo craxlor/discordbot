@@ -1,7 +1,5 @@
-package com.github.craxlor.discordbot.manager;
+package com.github.craxlor.discordbot.util.music;
 
-import com.github.craxlor.discordbot.util.music.AudioPlayerSendHandler;
-import com.github.craxlor.discordbot.util.music.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 

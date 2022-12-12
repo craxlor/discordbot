@@ -10,7 +10,7 @@ import com.github.craxlor.discordbot.command.module.core.command.slash.Reload;
 import com.github.craxlor.discordbot.command.module.core.command.slash.Role;
 import com.github.craxlor.discordbot.command.module.core.command.slash.Shutdown;
 import com.github.craxlor.discordbot.command.slash.SlashCommand;
-import com.github.craxlor.discordbot.manager.commandlist.CommandCollection;
+import com.github.craxlor.discordbot.util.core.commandlist.CommandCollection;
 
 public class CoreCollection extends ArrayList<SlashCommand> implements CommandCollection {
 
