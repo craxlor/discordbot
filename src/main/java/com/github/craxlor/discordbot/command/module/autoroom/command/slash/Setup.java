@@ -84,7 +84,7 @@ public class Setup extends SCAdmin {
 	@Override
 	@Nonnull
 	public String getDescription() {
-		return "autoroom";
+		return "Define an autoroom trigger for this guild.";
 	}
 
 	@Override
@@ -108,7 +108,8 @@ public class Setup extends SCAdmin {
 							.getAsChannel().asCategory();
 					String parent = event.getOption(OPT_PARENT_NAME).getAsString();
 
-					AutoroomTrigger autoroomTrigger = new AutoroomTrigger(trigger.getIdLong(), category.getIdLong(), name, parent);
+					AutoroomTrigger autoroomTrigger = new AutoroomTrigger(trigger.getIdLong(), category.getIdLong(),
+							name, parent);
 					System.out.println("insert new autoRoomTrigger");
 					database.insert(autoroomTrigger);
 
@@ -162,9 +163,9 @@ public class Setup extends SCAdmin {
 				}
 				// apply changes
 				AutoroomTrigger autoroomTrigger = database.getAutoroomTrigger(trigger.getIdLong());
-				autoroomTrigger.setNaming_pattern(name);
-				autoroomTrigger.setCategory_id(categoryID);
-				autoroomTrigger.setInheritance(parent);
+				autoroomTrigger.setNaming_pattern(name); // could be null
+				autoroomTrigger.setCategory_id(categoryID); // could be -1
+				autoroomTrigger.setInheritance(parent); // could be null
 				database.update(autoroomTrigger);
 				return reply.onCommand(event, Status.SUCCESS, statusDetail);
 			}
@@ -182,7 +183,7 @@ public class Setup extends SCAdmin {
 							"Could not identify " + trigger.getAsMention() + " as an autoroom trigger!");
 			}
 		}
-		
+
 		return reply.onCommand(event, Status.ERROR,
 				"Fatal error!\nPlease contact the developer immediately.\nDiscord Tag: Arty#1006");
 	}
