@@ -167,7 +167,7 @@ public class RedditGallery extends SCAdmin {
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
                     "Couldn't find a database entry for the subreddit: " + subreddit);
         // remove redditTask from DB
-        database.removeRedditTask(redditTask.getChannel_id());
+        database.removeRedditTask(redditTask.getChannel_id(), subreddit);
         // stop task
         GuildManager.getGuildManager(guild).getRedditScheduler().stop(redditTask);
         // delete textChannel

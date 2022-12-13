@@ -46,12 +46,12 @@ public class Database {
 
     public void setupTables() throws SQLException {
         //  SQL statement for creating a new table  
-        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER)";
-        String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER PRIMARY KEY, category_id INTEGER, naming_pattern TEXT, inheritance TEXT)";
-        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER PRIMARY KEY, trigger_id INTEGER, guild_id INTEGER)";
-        String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT PRIMARY KEY, channel_id TEXT, video_title TEXT)";
-        String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT PRIMARY KEY, video_id TEXT)";
-        String redditTasks = "CREATE TABLE IF NOT EXISTS redditTasks (channel_id INTEGER PRIMARY KEY, subreddit TEXT, firstTime TEXT, period INTEGER, guild_id INTEGER)";
+        String guildTable = "CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER, name TEXT, modules TEXT, colorHex TEXT, dj_id INTEGER, admin_id INTEGER, musicLog_id INTEGER)";
+        String autoroomTriggerTable = "CREATE TABLE IF NOT EXISTS autoroomTriggers (trigger_id INTEGER, category_id INTEGER, naming_pattern TEXT, inheritance TEXT)";
+        String autoroomChannelTable = "CREATE TABLE IF NOT EXISTS autoroomChannels (channel_id INTEGER, trigger_id INTEGER, guild_id INTEGER)";
+        String youtubeVideoTable = "CREATE TABLE IF NOT EXISTS ytVideos (video_id TEXT, channel_id TEXT, video_title TEXT)";
+        String youtubeSearchTable = "CREATE TABLE IF NOT EXISTS ytSearches (searchTerm TEXT, video_id TEXT)";
+        String redditTasks = "CREATE TABLE IF NOT EXISTS redditTasks (channel_id INTEGER, subreddit TEXT, firstTime TEXT, period INTEGER, guild_id INTEGER)";
         Statement statement = connection.createStatement();
         statement.execute(guildTable);
         statement.execute(autoroomTriggerTable);
@@ -123,11 +123,12 @@ public class Database {
 
     // AUTOROOMCHANNEL
     public void insert(AutoroomChannel autoroomChannel) {
-        String sql = "INSERT INTO autoroomChannels(channel_id, trigger_id) VALUES(?,?)";
+        String sql = "INSERT INTO autoroomChannels(channel_id, trigger_id, guild_id) VALUES(?,?,?)";
         try {
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, autoroomChannel.getChannel_id());
             preparedStatement.setLong(2, autoroomChannel.getTrigger_id());
+            preparedStatement.setLong(3, autoroomChannel.getGuild_id());
             preparedStatement.executeUpdate();
             logger.info("inserted new autoroomChannel");
         } catch (SQLException e) {
@@ -378,6 +379,20 @@ public class Database {
         try {
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, channel_id);
+            preparedStatement.executeUpdate();
+            logger.info("deleted a redditTask");
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+        }
+    }
+
+    public void removeRedditTask(long channel_id, String subreddit) {
+        String sql = "DELETE FROM redditTasks WHERE channel_id = ? AND subreddit = ?";
+        String enc64 = Base64.encodeBase64String(subreddit.getBytes());
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, channel_id);
+            preparedStatement.setString(2, enc64);
             preparedStatement.executeUpdate();
             logger.info("deleted a redditTask");
         } catch (SQLException e) {
