@@ -39,7 +39,6 @@ public class RedditScheduler {
         }
     }
 
-    @SuppressWarnings("null")
     public void schedule(RedditTask redditTask) {
         Date date = Calendar.getInstance().getTime();
         switch (redditTask.getFirstTime()) {
@@ -58,11 +57,7 @@ public class RedditScheduler {
         timerList.add(galleryTimer);
         logger.info("""
                 scheduled a redditTask
-                    guild:  %s
-                  channel:  %s
-                """.formatted(
-                guild.getName(),
-                guild.getTextChannelById(redditTask.getChannel_id()).getName()));
+                guild:  %s""".formatted(guild.getName()));
     }
 
     public void schedule(List<RedditTask> redditTasks) {
@@ -71,21 +66,14 @@ public class RedditScheduler {
         }
     }
 
-    @SuppressWarnings("null")
     public void stop(RedditTask redditTask) {
         for (MyTimer timer : timerList) {
             if (timer.getRedditTask().equals(redditTask)) {
                 timer.cancel();
                 timerList.remove(timer);
                 logger.info("""
-                            stopped a redditTask
-                                guild:  %s
-                            subreddit:  %s
-                              channel:  %s
-                        """.formatted(
-                        guild.getName(),
-                        redditTask.getSubreddit(),
-                        guild.getTextChannelById(redditTask.getChannel_id()).getName()));
+                        stopped a redditTask
+                        guild:  %s""".formatted(guild.getName()));
                 break;
             }
         }
