@@ -21,7 +21,7 @@ public class Main {
         Database database = Database.getInstance();
         database.setupTables();
         try {
-            JDABuilder builder = JDABuilder.createDefault(Properties.get("DEV_TOKEN"));
+            JDABuilder builder = JDABuilder.createDefault(Properties.get("BOT_TOKEN"));
             builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
             builder.setChunkingFilter(ChunkingFilter.ALL);
             builder.setLargeThreshold(50);
