@@ -1,6 +1,8 @@
 # discordbot
 a modular discordbot based on JDA 5.0
 
+[Invite](https://discord.com/oauth2/authorize?client_id=697835705920913491&permissions=275199945808&scope=bot%20applications.commands) the bot to your discord
+
 ## pull requests
 <p>have to be reviewed by at least one other person</p>
 <p>prefer: rebase, merge</p>
