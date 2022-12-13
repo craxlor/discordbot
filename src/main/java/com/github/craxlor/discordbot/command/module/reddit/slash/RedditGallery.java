@@ -167,18 +167,13 @@ public class RedditGallery extends SCAdmin {
             return new Reply(event.deferReply(), false).onCommand(event, Status.FAIL,
                     "Couldn't find a database entry for the subreddit: " + subreddit);
         // remove redditTask from DB
-        System.out.println(1);
         database.removeRedditTask(redditTask.getChannel_id());
-        System.out.println(2);
         // stop task
         GuildManager.getGuildManager(guild).getRedditScheduler().stop(redditTask);
-        System.out.println(3);
         // delete textChannel
         OptionMapping optionMapping = event.getOption(REMOVE_OPT_DELETE_NAME);
-        System.out.println(4);
         if (optionMapping != null && optionMapping.getAsBoolean())
             guild.getTextChannelById(redditTask.getChannel_id()).delete().queue();
-        System.out.println(5);
         return new Reply(event.deferReply(), false).onCommand(event, Status.SUCCESS,
                 "Deleted the gallery for the subreddit: " + subreddit + ".");
     }
