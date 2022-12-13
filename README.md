@@ -1,4 +1,7 @@
 # discordbot
+
+[![wakatime](https://wakatime.com/badge/user/2f9a547b-8f6e-4583-862f-f1535afcb058/project/5a4e6cd3-178e-4a3a-9930-2d8bbf51671e.svg)](https://wakatime.com/badge/user/2f9a547b-8f6e-4583-862f-f1535afcb058/project/5a4e6cd3-178e-4a3a-9930-2d8bbf51671e)
+
 a modular discordbot based on JDA 5.0
 
 [Invite](https://discord.com/oauth2/authorize?client_id=697835705920913491&permissions=275199945808&scope=bot%20applications.commands) the bot to your discord
