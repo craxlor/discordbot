@@ -386,7 +386,7 @@ public class Database {
             while (resultSet.next()) {
                 list.add(new RedditTask(
                         resultSet.getLong("channel_id"),
-                        resultSet.getString("subreddit"),
+                        new String(Base64.decodeBase64(resultSet.getString("subreddit"))),
                         resultSet.getString("firstTime"),
                         resultSet.getLong("period"),
                         resultSet.getLong("guild_id")));
