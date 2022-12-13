@@ -55,8 +55,10 @@ public class Reply {
         Guild guild = event.getGuild();
         Database database = Database.getInstance();
         long id = database.getDiscordServer(guild.getIdLong()).getMusicLog_id();
-        if (id > 0)
+        if (id > -1 && event.getChannel().getIdLong() != id) {
+            replyCallbackAction.setEphemeral(true);
             guild.getTextChannelById(id).sendMessageEmbeds(messageEmbed).queue();
+        }
         return this;
     }
 
