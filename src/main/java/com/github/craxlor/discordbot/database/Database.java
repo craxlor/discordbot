@@ -152,7 +152,27 @@ public class Database {
         return null;
     }
 
-    public List<AutoroomChannel> getAutoroomChannels(long guild_id) {
+    public List<AutoroomChannel> getAutoroomChannelsByTrigger(long trigger_id) {
+        String sql = "SELECT * FROM autoroomChannels WHERE trigger_id = ?";
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setLong(1, trigger_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<AutoroomChannel> list = new ArrayList<>();
+            while (resultSet.next()) {
+                list.add(new AutoroomChannel(
+                        resultSet.getLong("channel_id"),
+                        resultSet.getLong("trigger_id"),
+                        resultSet.getLong("guild_id")));
+            }
+            return list;
+        } catch (SQLException e) {
+            logger.warn(e.getMessage());
+            return null;
+        }
+    }
+
+    public List<AutoroomChannel> getAutoroomChannelsByGuild(long guild_id) {
         String sql = "SELECT * FROM autoroomChannels WHERE guild_id = ?";
         try {
             preparedStatement = connection.prepareStatement(sql);
@@ -232,14 +252,25 @@ public class Database {
     }
 
     public void update(AutoroomTrigger autoroomTrigger) {
-        String sql = "UPDATE autoroomTriggers SET category_id = ?, naming_pattern = ?, inheritance = ? WHERE trigger_id = ?";
+        String sql_c = "UPDATE autoroomTriggers SET category_id = ? WHERE trigger_id = ?";
+        String sql_n = "UPDATE autoroomTriggers SET naming_pattern = ? WHERE trigger_id = ?";
+        String sql_i = "UPDATE autoroomTriggers SET inheritance = ? WHERE trigger_id = ?";
         try {
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setLong(1, autoroomTrigger.getCategory_id());
-            preparedStatement.setString(2, autoroomTrigger.getNaming_pattern());
-            preparedStatement.setString(3, autoroomTrigger.getInheritance());
-            preparedStatement.setLong(4, autoroomTrigger.getTrigger_id());
-            preparedStatement.executeUpdate();
+            if (autoroomTrigger.getCategory_id() > -1) {
+                preparedStatement = connection.prepareStatement(sql_c);
+                preparedStatement.setLong(1, autoroomTrigger.getCategory_id());
+                preparedStatement.executeUpdate();
+            }
+            if (autoroomTrigger.getNaming_pattern() != null) {
+                preparedStatement = connection.prepareStatement(sql_n);
+                preparedStatement.setString(1, autoroomTrigger.getNaming_pattern());
+                preparedStatement.executeUpdate();
+            }
+            if (autoroomTrigger.getInheritance() != null) {
+                preparedStatement = connection.prepareStatement(sql_i);
+                preparedStatement.setString(1, autoroomTrigger.getInheritance());
+                preparedStatement.executeUpdate();
+            }
             logger.info("updated guild");
         } catch (SQLException e) {
             logger.warn(e.getMessage());

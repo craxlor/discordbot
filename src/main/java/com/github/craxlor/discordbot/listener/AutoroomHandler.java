@@ -61,7 +61,7 @@ public class AutoroomHandler extends ListenerAdapter {
         long autoroomID;
         VoiceChannel autoroom;
         Database database = Database.getInstance();
-        List<AutoroomChannel> autoroomChannels = database.getAutoroomChannels(guild.getIdLong());
+        List<AutoroomChannel> autoroomChannels = database.getAutoroomChannelsByGuild(guild.getIdLong());
         if (autoroomChannels == null || autoroomChannels.isEmpty() || autoroomChannels.size() < 1)
             return;
 
@@ -81,8 +81,8 @@ public class AutoroomHandler extends ListenerAdapter {
         String name = autoroomTrigger.getNaming_pattern();
         // parse name
         if (name.contains("number")) {
-            List<AutoroomChannel> autoroomChannels = database.getAutoroomChannels(autoroomTrigger.getTrigger_id());
-            name = name.replace("number", Integer.toString(autoroomChannels.size()));
+            List<AutoroomChannel> autoroomChannels = database.getAutoroomChannelsByTrigger(autoroomTrigger.getTrigger_id());
+            name = name.replace("number", Integer.toString(autoroomChannels.size()+1));
         }
         if (name.contains("username")) {
             // use username as dynamicName
