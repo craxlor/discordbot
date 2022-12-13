@@ -57,7 +57,7 @@ public class Customize extends SlashCommand {
     @Override
     @Nonnull
     public String getDescription() {
-        return "customize the dynamic channel you're in";
+        return "customize the autoroom channel you're in";
     }
 
     @Override

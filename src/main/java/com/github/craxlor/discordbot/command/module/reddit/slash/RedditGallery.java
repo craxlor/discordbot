@@ -74,7 +74,7 @@ public class RedditGallery extends SCAdmin {
     @Override
     @Nonnull
     public String getDescription() {
-        return "placeholder";
+        return "Post images from a subreddit to a text channel at an interval.";
     }
 
     @Override

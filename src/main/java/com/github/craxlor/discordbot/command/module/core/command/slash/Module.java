@@ -49,7 +49,7 @@ public class Module extends SCAdmin {
     @Override
     @Nonnull
     public String getDescription() {
-        return "add or remove certain modules of the bot";
+        return "add or remove a module of the bot";
     }
 
     @Override

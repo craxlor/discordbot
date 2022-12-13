@@ -45,7 +45,7 @@ public class MusicLog extends SCAdmin {
     @Override
     @Nonnull
     public String getDescription() {
-        return "configure music log";
+        return "Configure a music log.";
     }
 
     @Override
