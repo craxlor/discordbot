@@ -23,7 +23,7 @@ public class RedditHelper {
         // check mimetype of file
         fileNameMap = URLConnection.getFileNameMap();
         mimeType = fileNameMap.getContentTypeFor(url);
-        if (mimeType.indexOf("image") == -1)
+        if (mimeType == null || mimeType.indexOf("image") == -1)
             return false;
         return true;
     }

@@ -139,7 +139,6 @@ public class RedditScheduler {
         }
 
         @Override
-        @SuppressWarnings("null")
         public void run() {
             boolean isPostCompatible = false;
             RedditPost redditPost = null;
@@ -155,8 +154,11 @@ public class RedditScheduler {
             }
             // send message
             RedditHelper.sendRedditPost(textChannel, redditPost);
+            if (posted.size() > 1000)
+                posted.clear();
+
             posted.add(redditPost);
-            logger.info("posted " + redditPost.getUrl_overridden_by_dest());
+            // logger.info("posted " + redditPost.getUrl_overridden_by_dest());
         }
 
     }

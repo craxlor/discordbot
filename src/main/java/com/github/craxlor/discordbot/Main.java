@@ -9,7 +9,6 @@ import com.github.craxlor.discordbot.listener.MusicVoiceConnectionHandler;
 import com.github.craxlor.discordbot.listener.RedditHandler;
 import com.github.craxlor.discordbot.listener.SlashCommandInteractionHandler;
 import com.github.craxlor.discordbot.util.Properties;
-import com.github.craxlor.discordbot.util.core.commandlist.Commandlist;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -34,7 +33,7 @@ public class Main {
             jda.addEventListener(new RedditHandler());
             jda.getPresence().setActivity(Activity.watching("..."));
             // jda.updateCommands().addCommands().queue();
-            jda.updateCommands().addCommands(Commandlist.getGlobalCommands().getCommandData()).queue();
+            // jda.updateCommands().addCommands(Commandlist.getGlobalCommands().getCommandData()).queue();
             jda.awaitReady();
         } catch (InterruptedException e) {
             e.printStackTrace();

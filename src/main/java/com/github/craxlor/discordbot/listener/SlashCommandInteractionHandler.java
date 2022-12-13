@@ -45,7 +45,8 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
             reply = slashCommand.execute(event);
             // TODO insert logging to reply for better, more accurate logging
             logger.info(LogHelper.logCommand(event, Status.SUCCESS, "successful execution"));
-            reply.send();
+            if (reply != null)
+                reply.send();
         } catch (Exception e) {
             statusDetail = """
                     fatal error on command execution

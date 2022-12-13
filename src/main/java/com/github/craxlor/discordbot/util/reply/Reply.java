@@ -37,7 +37,6 @@ public class Reply {
     }
 
     public Reply onCommand(SlashCommandInteractionEvent event, Status status, String statusDetail) {
-        // setup messageEmbed
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setCommandReply(event, status, statusDetail);
         messageEmbed = embedBuilder.build(event.getMember());
@@ -66,7 +65,7 @@ public class Reply {
     }
 
     public Reply onMusic(SlashCommandInteractionEvent event, Status status, String statusDetail,
-           AudioTrackInfo audioTrackInfo) {
+            AudioTrackInfo audioTrackInfo) {
         return onMusic(event, status, statusDetail, audioTrackInfo, null);
     }
 
