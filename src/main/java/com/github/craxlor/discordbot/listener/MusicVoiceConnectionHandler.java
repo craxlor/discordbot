@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
+import com.github.craxlor.discordbot.command.module.music.command.slash.Disconnect;
 import com.github.craxlor.discordbot.util.core.GuildManager;
 
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,6 +18,15 @@ public class MusicVoiceConnectionHandler extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {
+        if (event.getChannelLeft() != null) {// someone left a voiceChannel
+            final Member member = event.getMember();
+            final Member bot = event.getGuild().getSelfMember();
+            if (member.equals(bot)) { // bot left voicechannel
+                Disconnect.disconnect(event.getGuild());
+                GuildManager.getGuildManager(event.getGuild()).getLogger().info("bot has been disconnected manually");
+            }
+        }
+
         if (event.getChannelJoined() == null) {
             // exit cause noone joined a channel -> bot didn't join a channel
             return;
